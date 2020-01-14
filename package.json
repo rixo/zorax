@@ -1,0 +1,13 @@
+{
+  "name": "zorax",
+  "version": "0.0.0",
+  "description": "Zora with extensibility",
+  "main": "index.js",
+  "author": "rixo <rixo@rixo.fr>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "zora": "^3.1.8"
+  }
+}
