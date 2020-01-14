@@ -1,7 +1,5 @@
 import * as zora from 'zora'
 
-export * from 'zora'
-
 const pipe = (...fns) => x0 => fns.reduce((x, f) => f(x), x0)
 
 const parseTestArgs = ([desc, a, ...rest]) => {
