@@ -132,25 +132,25 @@ describe('createHarness', () => {
     })
   })
 
-  test('createHarness(opts, ...hooks)', t => {
+  test('createHarness(opts, [...plugins])', t => {
     const opts = {}
     let zz
 
-    const hooks = [
+    const plugins = [
       spy((z, options) => {
         zz = z
         // t.eq(run.callCount, 0, 'hooks are called before run')
         t.is(options, opts, 'decorator is passed harness options')
         t.eq(
-          hooks[1].callCount,
-          hooks[0].callCount - 1,
+          plugins[1].callCount,
+          plugins[0].callCount - 1,
           'hooks are called left to right'
         )
       }),
       spy(() => {
         t.eq(
-          hooks[1].callCount,
-          hooks[0].callCount,
+          plugins[1].callCount,
+          plugins[0].callCount,
           'hooks are called left to right'
         )
       }),
@@ -160,18 +160,18 @@ describe('createHarness', () => {
       t.is(z, zz, 'run is called with same context as hooks')
     })
 
-    const z = createHarness(opts, ...hooks) // <- <- <-
+    const z = createHarness(opts, plugins) // <- <- <-
 
     t.ok(isHarness(z), 'returns a harness')
 
     t.eq(run.callCount, 0, 'run is not called')
 
     t.test('hooks are called once initially on harness', t => {
-      hooks.forEach((hook, i) => {
+      plugins.forEach((pg, i) => {
         t.test(`hook #${i}`, t => {
-          t.eq(hook.callCount, 1, 'has been called in createHarness')
-          t.is(hook.calls[0][0], z, 'hook has been called with harness')
-          t.is(hook.calls[0][1], opts, 'hook has been called with options')
+          t.eq(pg.callCount, 1, 'has been called in createHarness')
+          t.is(pg.calls[0][0], z, 'hook has been called with harness')
+          t.is(pg.calls[0][1], opts, 'hook has been called with options')
         })
       })
     })
@@ -188,7 +188,7 @@ describe('createHarness', () => {
       t.eq(run.callCount, 1, 'run has been called')
       t.eq(run2.callCount, 1, 'run2 has been called')
 
-      hooks.forEach((hook, i) => {
+      plugins.forEach((hook, i) => {
         t.eq(
           hook.callCount,
           3,
@@ -201,29 +201,43 @@ describe('createHarness', () => {
     })
   })
 
-  test('createHarness(...hooks): options argument is optional', async t => {
-    const harnessHooks = [spy(), spy()]
-    const testHooks = [spy(), spy()]
+  test('createHarness([...plugins]): options argument is optional', async t => {
+    const harnessPlugins = [spy(), spy()]
+    const testPlugins = [spy(), spy()]
     const run = spy()
 
-    const z = createHarness(...harnessHooks) // <- <- <-
+    const z = createHarness(harnessPlugins) // <- <- <-
 
-    harnessHooks.forEach((hook, i) => {
+    harnessPlugins.forEach((hook, i) => {
       t.eq(hook.callCount, 1, `hook ${i} has been called in createHarness`)
     })
 
-    z.test('', testHooks, run) // <- <- <-
+    z.test('', testPlugins, run) // <- <- <-
 
     await z.report(blackHole)
 
     t.eq(run.callCount, 1, 'run has been called in test')
 
-    harnessHooks.forEach((hook, i) => {
+    harnessPlugins.forEach((hook, i) => {
       t.eq(hook.callCount, 2, `harness hook ${i} has been called in test`)
     })
-    testHooks.forEach((hook, i) => {
+    testPlugins.forEach((hook, i) => {
       t.eq(hook.callCount, 1, `test hook ${i} has been called in test`)
     })
+  })
+
+  test('createHarness({ plugins: [...plugins] })', async t => {
+    const p1 = { test: spy() }
+    const p2 = { test: spy() }
+    const plugins = [p1, p2]
+    const z = createHarness({ plugins })
+    t.eq(p1.test.callCount, 1, 'plugin #1 has been applied to harness')
+    t.eq(p2.test.callCount, 1, 'plugin #2 has been applied to harness')
+    t.ok(isHarness(z))
+    z.test('', () => {})
+    await z.report()
+    t.eq(p1.test.callCount, 2, 'plugin #1 has been applied to test context')
+    t.eq(p2.test.callCount, 2, 'plugin #2 has been applied to test context')
   })
 })
 
@@ -234,70 +248,66 @@ describe('createHarnessFactory', () => {
     t.ok(isHarnessFactory(createHarness), 'creates a harness factory')
 
     t.test('the created harness is hookable', t => {
-      const harnessHook = spy()
-      const testHook = spy()
+      const harnessPlugin = spy()
+      const testPlugin = spy()
       const run = spy()
 
-      const z = createHarness(harnessHook)
+      const z = createHarness([harnessPlugin])
 
-      t.eq(harnessHook.callCount, 1, 'harness hook called in createHarness')
+      t.eq(harnessPlugin.callCount, 1, 'harness hook called in createHarness')
 
-      z.test('', [testHook], run)
+      z.test('', [testPlugin], run)
 
-      t.eq(harnessHook.callCount, 2, 'harness hook called in test')
-      t.eq(testHook.callCount, 1, 'harness hook called in test')
+      t.eq(harnessPlugin.callCount, 2, 'harness hook called in test')
+      t.eq(testPlugin.callCount, 1, 'harness hook called in test')
     })
   })
 
   test('createHarnessFactory({ hooks })', t => {
-    const factoryHook = spy()
-    const harnessHook = spy()
-    const testHook = spy()
+    const factoryPg = spy()
+    const harnessPg = spy()
+    const testPg = spy()
 
-    const createHarness = createHarnessFactory({ hooks: [factoryHook] })
+    const createHarness = createHarnessFactory({ plugins: [factoryPg] })
 
     t.eq(
-      factoryHook.callCount,
+      factoryPg.callCount,
       0,
       'factory hook is not called in createHarnessFactory'
     )
     t.eq(
-      harnessHook.callCount,
+      harnessPg.callCount,
       0,
       'harness hook is not called in createHarnessFactory'
     )
-    t.eq(
-      testHook.callCount,
-      0,
-      'test hook is not called in createHarnessFactory'
-    )
+    t.eq(testPg.callCount, 0, 'test hook is not called in createHarnessFactory')
 
-    const z = createHarness(harnessHook)
+    const z = createHarness([harnessPg])
 
-    t.eq(factoryHook.callCount, 1, 'factory hook is called in createHarness')
-    t.eq(harnessHook.callCount, 1, 'harness hook is called in createHarness')
-    t.eq(testHook.callCount, 0, 'test hook is not called in createHarness')
+    t.eq(factoryPg.callCount, 1, 'factory hook is called in createHarness')
+    t.eq(harnessPg.callCount, 1, 'harness hook is called in createHarness')
+    t.eq(testPg.callCount, 0, 'test hook is not called in createHarness')
 
-    z.test('', [testHook])
+    z.test('', [testPg])
 
-    t.eq(factoryHook.callCount, 2, 'factory hook is called again in test')
-    t.eq(harnessHook.callCount, 2, 'harness hook is called again in test')
-    t.eq(testHook.callCount, 1, 'test hook is called in test')
+    t.eq(factoryPg.callCount, 2, 'factory hook is called again in test')
+    t.eq(harnessPg.callCount, 2, 'harness hook is called again in test')
+    t.eq(testPg.callCount, 1, 'test hook is called in test')
   })
 
   test('createHarnessFactory({ createHarness })', t => {
     let extraHook1Calls = 0
-    const hook1 = spy(() => {
+    const pg1 = spy(() => {
       t.eq(
-        hook2.callCount,
-        hook1.callCount - 1 - extraHook1Calls,
+        pg2.callCount,
+        pg1.callCount - 1 - extraHook1Calls,
         'hook1 is called before hook2'
       )
     })
-    const hook2 = spy(() => {
+    const pg2 = spy(() => {
       t.eq(
-        hook1.callCount - extraHook1Calls,
-        hook2.callCount,
+        pg1.callCount - extraHook1Calls,
+        pg2.callCount,
         'hook2 is called after hook2'
       )
     })
@@ -307,30 +317,30 @@ describe('createHarnessFactory', () => {
     const createHarness1 = spy(
       createHarnessFactory({
         createHarness: createHarness0,
-        hooks: [hook1],
+        plugins: [pg1],
       })
     )
 
     const createHarness2 = createHarnessFactory({
       createHarness: createHarness1,
-      hooks: [hook2],
+      plugins: [pg2],
     })
 
     createHarness1()
     // parent createHarness
     t.eq(createHarness1.callCount, 1, 'createHarness1 has been called')
     t.eq(createHarness0.callCount, 1, 'createHarness0 called in createHarness1')
-    // hooks
-    t.eq(hook1.callCount, 1, 'hook1 called in createHarness1')
+    // plugins
+    t.eq(pg1.callCount, 1, 'hook1 called in createHarness1')
     extraHook1Calls++
 
     createHarness2()
     // parent createHarness
     t.eq(createHarness1.callCount, 2, 'createHarness1 has been called')
     t.eq(createHarness0.callCount, 2, 'createHarness0 called in createHarness1')
-    // hooks
-    t.eq(hook1.callCount, 2, 'hook1 called in createHarness2')
-    t.eq(hook2.callCount, 1, 'hook1 called in createHarness2')
+    // plugins
+    t.eq(pg1.callCount, 2, 'hook1 called in createHarness2')
+    t.eq(pg2.callCount, 1, 'hook1 called in createHarness2')
   })
 })
 
@@ -470,11 +480,13 @@ test('use case: macro', async t => {
   const b = {}
   const c = {}
 
-  const withMacro = t => {
-    const { test } = t
-    t.test = function zora_spec_fn(desc, run, ...args) {
-      return test(desc, t => run(t, ...args))
-    }
+  const withMacro = {
+    test: t => {
+      const { test } = t
+      t.test = function zora_spec_fn(desc, run, ...args) {
+        return test(desc, t => run(t, ...args))
+      }
+    },
   }
 
   const run2 = spy((z, ...rest) => {
@@ -497,7 +509,7 @@ test('use case: macro', async t => {
     z.test('', run2, 'foo', 42) // <- run sub test
   })
 
-  const z = createHarness(withMacro) // <- create harness
+  const z = createHarness({}, withMacro) // <- create harness
 
   z.test('', run, a, b, c)
 
@@ -506,3 +518,84 @@ test('use case: macro', async t => {
   t.eq(run.callCount, 1, 'run has been called')
   t.eq(run2.callCount, 1, 'run2 has been called')
 })
+
+describe('t.test(...)', () => {
+  test("t.test('', t => {})", t => {
+    const run = spy((...args) => {
+      t.eq(args.length, 1)
+      const [z] = args
+      t.ok(isTestContext(z))
+    })
+    const z = createHarness()
+    t.eq(run.callCount, 0)
+    t.test('', run)
+    t.eq(run.callCount, 1)
+  })
+
+  test("t.test('', async t => {})", async t => {
+    const runAsync = spy(async (...args) => {
+      t.eq(args.length, 1)
+      const [z] = args
+      t.ok(isTestContext(z))
+    })
+    const z = createHarness()
+    t.eq(runAsync.callCount, 0)
+    t.test('', runAsync)
+    t.eq(runAsync.callCount, 1)
+    await z.report(blackHole)
+  })
+
+  test("t.test('', plugin, run)", async t => {
+    let zz
+    const run = spy(async (...args) => {
+      t.eq(args.length, 1)
+      const [z] = args
+      t.ok(isTestContext(z))
+      t.is(z, zz, 'spec function is called with the same context as plugins')
+    })
+    const plugin = {
+      test: spy((z, opts) => {
+        zz = z
+        t.ok(isTestContext(z), 'plugins are called with the test context')
+      }),
+    }
+    const z = createHarness()
+    z.test('', plugin, run) // <- <- <-
+    t.eq(plugin.test.callCount, 1, 'plugin test hook has been run')
+  })
+
+  test("t.test('', [...plugins], run)", async t => {
+    let zz
+    const run = spy(async (...args) => {
+      t.eq(args.length, 1, 'spec function is called with one argument')
+      const [z] = args
+      t.ok(isTestContext(z), 'spec function is called with test context')
+      t.is(z, zz, 'spec function is called with the same context as plugins')
+    })
+    const plugins = [
+      {
+        test: spy((z, opts) => {
+          zz = z
+          t.ok(isTestContext(z), 'plugins are called with the test context')
+        }),
+      },
+      {
+        test: spy((z, opts) => {
+          t.ok(zz)
+          t.is(z, zz, 'plugins are called with the same test context')
+        }),
+      },
+    ]
+    const z = createHarness()
+    z.test('', plugins, run) // <- <- <-
+    plugins.forEach((plugin, i) => {
+      t.eq(plugin.test.callCount, 1, `plugin #${i} test hook has been run`)
+    })
+  })
+})
+
+// describe('plugin', () => {
+//   t.test('plugin.test', async t => {
+//     const z = createHarness({ })
+//   })
+// })
