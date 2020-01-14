@@ -59,6 +59,8 @@ const prefixes = Prefix()
 
 const test = (desc, ...args) => zoar.test(`${prefixes}${desc}`, ...args)
 
+const only = (desc, ...args) => zoar.only(`${prefixes}${desc}`, ...args)
+
 export const describe = (prefix, run) => {
   prefixes.push(prefix)
   if (run) {
@@ -67,6 +69,7 @@ export const describe = (prefix, run) => {
   } else {
     prefixes.reset(prefix)
   }
+  test.only = only
   return test
 }
 
