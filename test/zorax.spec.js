@@ -19,6 +19,8 @@ import { createHarness, createHarnessFactory } from '../lib/zorax'
 // disable zora auto start
 createZoraHarness()
 
+const legacyPg = test => (Array.isArray(test) ? test.map(legacyPg) : { test })
+
 const test = describe('zorax')
 
 test("exports * from 'zora'", t => {
@@ -121,12 +123,12 @@ describe('createHarness', () => {
       const z = createHarness(opts)
       const run = spy()
       t.eq(run.callCount, 0, 'run is not called')
-      const decorators = [spy(), spy()]
-      z.test('my test', decorators, run)
+      const plugins = [spy(), spy()]
+      z.test('my test', legacyPg(plugins), run)
       await z.report(blackHole)
       t.eq(run.callCount, 1, 'run has been called')
       t.ok(
-        decorators.every(fn => fn.callCount === 1),
+        plugins.every(fn => fn.callCount === 1),
         'all decorators have been called'
       )
     })
@@ -160,7 +162,7 @@ describe('createHarness', () => {
       t.is(z, zz, 'run is called with same context as hooks')
     })
 
-    const z = createHarness(opts, plugins) // <- <- <-
+    const z = createHarness(opts, legacyPg(plugins)) // <- <- <-
 
     t.ok(isHarness(z), 'returns a harness')
 
@@ -177,11 +179,11 @@ describe('createHarness', () => {
     })
 
     t.test('after test', async t => {
-      const testHooks = [spy(), spy()]
+      const testPlugins = [spy(), spy()]
       const run2 = spy()
 
       z.test('my test', run)
-      z.test('my test', testHooks, run2)
+      z.test('my test', legacyPg(testPlugins), run2)
 
       await z.report(blackHole)
 
@@ -195,7 +197,7 @@ describe('createHarness', () => {
           `harness hook #${i} have been called in each test`
         )
       })
-      testHooks.forEach((hook, i) => {
+      testPlugins.forEach((hook, i) => {
         t.eq(hook.callCount, 1, `test hook #${i} has been called`)
       })
     })
@@ -206,13 +208,13 @@ describe('createHarness', () => {
     const testPlugins = [spy(), spy()]
     const run = spy()
 
-    const z = createHarness(harnessPlugins) // <- <- <-
+    const z = createHarness(legacyPg(harnessPlugins)) // <- <- <-
 
     harnessPlugins.forEach((hook, i) => {
       t.eq(hook.callCount, 1, `hook ${i} has been called in createHarness`)
     })
 
-    z.test('', testPlugins, run) // <- <- <-
+    z.test('', legacyPg(testPlugins), run) // <- <- <-
 
     await z.report(blackHole)
 
@@ -235,7 +237,7 @@ describe('createHarness', () => {
     t.eq(p2.test.callCount, 1, 'plugin #2 has been applied to harness')
     t.ok(isHarness(z))
     z.test('', () => {})
-    await z.report()
+    await z.report(blackHole)
     t.eq(p1.test.callCount, 2, 'plugin #1 has been applied to test context')
     t.eq(p2.test.callCount, 2, 'plugin #2 has been applied to test context')
   })
@@ -252,11 +254,11 @@ describe('createHarnessFactory', () => {
       const testPlugin = spy()
       const run = spy()
 
-      const z = createHarness([harnessPlugin])
+      const z = createHarness([legacyPg(harnessPlugin)])
 
       t.eq(harnessPlugin.callCount, 1, 'harness hook called in createHarness')
 
-      z.test('', [testPlugin], run)
+      z.test('', [legacyPg(testPlugin)], run)
 
       t.eq(harnessPlugin.callCount, 2, 'harness hook called in test')
       t.eq(testPlugin.callCount, 1, 'harness hook called in test')
@@ -271,7 +273,10 @@ describe('createHarnessFactory', () => {
     const harnessPg = spy()
     const testPg = spy()
 
-    const createHarness = createHarnessFactory({ plugins: [factoryPg], foo })
+    const createHarness = createHarnessFactory({
+      plugins: [legacyPg(factoryPg)],
+      foo,
+    })
 
     t.eq(
       factoryPg.callCount,
@@ -285,13 +290,13 @@ describe('createHarnessFactory', () => {
     )
     t.eq(testPg.callCount, 0, 'test hook is not called in createHarnessFactory')
 
-    const z = createHarness([harnessPg])
+    const z = createHarness([legacyPg(harnessPg)])
 
     t.eq(factoryPg.callCount, 1, 'factory hook is called in createHarness')
     t.eq(harnessPg.callCount, 1, 'harness hook is called in createHarness')
     t.eq(testPg.callCount, 0, 'test hook is not called in createHarness')
 
-    z.test('', [testPg])
+    z.test('', [legacyPg(testPg)])
 
     t.eq(factoryPg.callCount, 2, 'factory hook is called again in test')
     t.eq(harnessPg.callCount, 2, 'harness hook is called again in test')
@@ -337,13 +342,13 @@ describe('createHarnessFactory', () => {
     const createHarness1 = spy(
       createHarnessFactory({
         createHarness: createHarness0,
-        plugins: [pg1],
+        plugins: [legacyPg(pg1)],
       })
     )
 
     const createHarness2 = createHarnessFactory({
       createHarness: createHarness1,
-      plugins: [pg2],
+      plugins: [legacyPg(pg2)],
     })
 
     createHarness1()
@@ -377,28 +382,25 @@ describe('test', () => {
       })
     })
 
-    const decorators = [
+    const plugins = [
       spy((z, options) => {
         zz = z
         t.eq(run.callCount, 0, 'decorators are called before run')
         t.eq(options, opts, 'decorator is passed harness options')
-        t.eq(decorators[1].callCount, 0, 'decorators are called left to right')
+        t.eq(plugins[1].callCount, 0, 'decorators are called left to right')
       }),
       spy(() => {
-        t.eq(decorators[0].callCount, 1, 'decorators are called left to right')
+        t.eq(plugins[0].callCount, 1, 'decorators are called left to right')
       }),
     ]
 
     const z = createHarness(opts)
 
-    z.test('desc', [...decorators], run, 42, 'foo') // <- <- <-
+    z.test('desc', [...legacyPg(plugins)], run, 42, 'foo') // <- <- <-
 
     t.eq(run.callCount, 1, 'run is called')
 
-    t.ok(
-      decorators.every(fn => fn.callCount === 1),
-      'all decorators are called'
-    )
+    t.ok(plugins.every(fn => fn.callCount === 1), 'all decorators are called')
   })
 })
 
@@ -435,7 +437,7 @@ describe('nested test context', () => {
     const run2 = spy()
 
     const run = spy(t => {
-      t.test('', dd2, run2)
+      t.test('', legacyPg(dd2), run2)
     })
 
     t.ok(
@@ -443,7 +445,7 @@ describe('nested test context', () => {
       'hooks are not called before test run'
     )
 
-    z.test('', dd, run)
+    z.test('', legacyPg(dd), run)
 
     await z.report(blackHole)
 
@@ -479,9 +481,11 @@ test('the hooks argument is filtered out of the args passed down the hooks -> ru
     return run(...args)
   })
 
-  const hook = spy(z => {
-    z.test = ttest
-  })
+  const hook = {
+    test: spy(z => {
+      z.test = ttest
+    }),
+  }
 
   const run = spy()
 
@@ -491,7 +495,7 @@ test('the hooks argument is filtered out of the args passed down the hooks -> ru
 
   await z.report(blackHole)
 
-  t.eq(hook.callCount, 1, 'hook has been called')
+  t.eq(hook.test.callCount, 1, 'hook has been called')
   t.eq(ttest.callCount, 1, 'test decorator has been called')
 })
 
@@ -614,8 +618,20 @@ describe('t.test', () => {
   })
 })
 
-// describe('plugin', () => {
-//   t.test('plugin.test', async t => {
-//     const z = createHarness({ })
-//   })
-// })
+describe('plugin', () => {
+  test('plugin.test', t => {
+    const pg = { test: spy() }
+    const z = createHarness([pg])
+    t.eq(pg.test.callCount, 1, 'is applied to harness')
+    z.test('', () => {})
+    t.eq(pg.test.callCount, 2, 'is applied to test context')
+  })
+
+  test('plugin.harness', t => {
+    const pg = { harness: spy() }
+    const z = createHarness([pg])
+    t.eq(pg.harness.callCount, 1, 'is applied to harness')
+    z.test('', () => {})
+    t.eq(pg.harness.callCount, 1, 'is not applied to test context')
+  })
+})
