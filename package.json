@@ -2,10 +2,23 @@
   "name": "zorax",
   "version": "0.0.0",
   "description": "Zora with extensibility",
-  "main": "index.js",
+  "keywords": [
+    "zora",
+    "plugin",
+    "plugins",
+    "hook"
+  ],
   "author": "rixo <rixo@rixo.fr>",
   "license": "MIT",
   "private": false,
+  "main": "lib/zorax.js",
+  "files": [
+    "lib"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "devDependencies": {
     "esm": "^3.2.25",
     "zora": "^3.1.8"
