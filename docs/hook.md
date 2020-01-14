@@ -1,7 +1,8 @@
 # zorax/hook
 
-~~~js
+## test
 
+~~~js
 t.test(desc, meta, spec, ...data)
 
 // basic
@@ -34,12 +35,28 @@ t.test(
 )
 ~~~
 
+## createHarness
+
+~~~js
+// createHarness(options, ...plugins)
+createHarness({ plugins, ...options })
+createHarness(options, [...plugins])
+createHarness([...plugins])
+~~~
+
+## createHarnessFactory
+
+~~~js
+createHarnessFactory({ plugins, ...defaultOptions })
+createHarnessFactory([...plugins])
+~~~
+
 ## Plugins
 
 ~~~js
 {
-  options: opts => opts,
   factory: (createHarness, opts) => createHarness, // MAYBE
+  options: opts => opts,
   harness: (t, opts) => void,
   test: (t, opts) => void,
   macro: async (t, ...data) => void,
