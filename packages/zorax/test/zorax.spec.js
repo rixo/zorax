@@ -634,4 +634,39 @@ describe('plugin', () => {
     z.test('', () => {})
     t.eq(pg.harness.callCount, 1, 'is not applied to test context')
   })
+
+  test('plugin.options', t => {
+    const createHarnessSpy = spy(createHarness)
+    const o = { bim: 1 }
+    const o2 = { bimo: 2 }
+    const o3 = { bimooo: 3 }
+    const plugins = [
+      {
+        options: spy(x => {
+          t.eq(x, o, 'first plugin is passed initial options')
+          return o2
+        }),
+      },
+      {
+        options: spy(x => {
+          t.is(x, o2, 'next plugin is passed the result of the previous one')
+          return o3
+        }),
+      },
+    ]
+
+    const z = createHarnessFactory({ createHarness: createHarnessSpy })(
+      o,
+      plugins
+    )
+
+    t.eq(createHarnessSpy.callCount, 1)
+    t.is(
+      createHarnessSpy.calls[0][0],
+      o3,
+      'internal createHarness is called with result of the last options plugin'
+    )
+    t.eq(plugins[0].options.callCount, 1)
+    t.eq(plugins[1].options.callCount, 1)
+  })
 })

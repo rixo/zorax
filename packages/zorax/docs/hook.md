@@ -1,5 +1,18 @@
 # zorax/hook
 
+Plugins have hooks.
+
+~~~js
+{
+  factory: (createHarness, opts) => createHarness, // MAYBE
+  options: opts => opts,
+  harness: (t, opts) => void,
+  test: (t, opts) => void,
+  macro: async (t, ...data) => void,
+  flag: ['e2e', 'zorax'], // or "tag"?
+}
+~~~
+
 ## test
 
 ~~~js
