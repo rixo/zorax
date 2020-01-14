@@ -140,7 +140,7 @@ describe('createHarness', () => {
       spy((z, options) => {
         zz = z
         // t.eq(run.callCount, 0, 'hooks are called before run')
-        t.is(options, opts, 'decorator is passed harness options')
+        t.eq(options, opts, 'decorator is passed harness options')
         t.eq(
           plugins[1].callCount,
           plugins[0].callCount - 1,
@@ -171,7 +171,7 @@ describe('createHarness', () => {
         t.test(`hook #${i}`, t => {
           t.eq(pg.callCount, 1, 'has been called in createHarness')
           t.is(pg.calls[0][0], z, 'hook has been called with harness')
-          t.is(pg.calls[0][1], opts, 'hook has been called with options')
+          t.eq(pg.calls[0][1], opts, 'hook has been called with options')
         })
       })
     })
@@ -263,12 +263,15 @@ describe('createHarnessFactory', () => {
     })
   })
 
-  test('createHarnessFactory({ hooks })', t => {
-    const factoryPg = spy()
+  test('createHarnessFactory({ plugins, ...defaultOptions })', t => {
+    const foo = {}
+    const factoryPg = spy((z, opts) => {
+      t.is(opts.foo, foo)
+    })
     const harnessPg = spy()
     const testPg = spy()
 
-    const createHarness = createHarnessFactory({ plugins: [factoryPg] })
+    const createHarness = createHarnessFactory({ plugins: [factoryPg], foo })
 
     t.eq(
       factoryPg.callCount,
@@ -293,6 +296,23 @@ describe('createHarnessFactory', () => {
     t.eq(factoryPg.callCount, 2, 'factory hook is called again in test')
     t.eq(harnessPg.callCount, 2, 'harness hook is called again in test')
     t.eq(testPg.callCount, 1, 'test hook is called in test')
+  })
+
+  test('createHarnessFactory([...plugins])', t => {
+    const opts = {}
+    const factoryPg = {
+      test: spy((...args) => {
+        t.eq(args.length, 2)
+        t.ok(isTestContext(args[0]), 'test hook is called with ctx as 1st arg')
+        t.eq(args[1], opts, 'test hook is called with opts as 2nd arg')
+      }),
+    }
+    const createHarness = createHarnessFactory([factoryPg])
+    t.eq(factoryPg.test.callCount, 0, 'plugin not called before createHarness')
+    const z = createHarness(opts)
+    t.eq(factoryPg.test.callCount, 1, 'plugin called after createHarness')
+    z.test('', () => {})
+    t.eq(factoryPg.test.callCount, 2, 'plugin called after test')
   })
 
   test('createHarnessFactory({ createHarness })', t => {
@@ -361,7 +381,7 @@ describe('test', () => {
       spy((z, options) => {
         zz = z
         t.eq(run.callCount, 0, 'decorators are called before run')
-        t.is(options, opts, 'decorator is passed harness options')
+        t.eq(options, opts, 'decorator is passed harness options')
         t.eq(decorators[1].callCount, 0, 'decorators are called left to right')
       }),
       spy(() => {
@@ -519,7 +539,7 @@ test('use case: macro', async t => {
   t.eq(run2.callCount, 1, 'run2 has been called')
 })
 
-describe('t.test(...)', () => {
+describe('t.test', () => {
   test("t.test('', t => {})", t => {
     const run = spy((...args) => {
       t.eq(args.length, 1)
