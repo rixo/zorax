@@ -18,7 +18,7 @@ createZoraHarness()
 
 const legacyPg = test => (Array.isArray(test) ? test.map(legacyPg) : { test })
 
-const test = describe('zora-plug')
+const test = describe('zorax/hook')
 
 // NOTE zorax should not be implementing zora-macro
 //
@@ -391,7 +391,10 @@ describe('test', () => {
 
     t.eq(run.callCount, 1, 'run is called')
 
-    t.ok(plugins.every(fn => fn.callCount === 1), 'all decorators are called')
+    t.ok(
+      plugins.every(fn => fn.callCount === 1),
+      'all decorators are called'
+    )
   })
 })
 
@@ -464,16 +467,18 @@ test('the hooks argument is filtered out of the args passed down the hooks -> ru
 
   const ttest = spy((d, r, ...args) => {
     t.is(d, desc)
-    t.is(r, run)
     t.eq(args.length, 3)
     t.is(args[0], a)
     t.is(args[1], b)
     t.is(args[2], c)
-    return run(...args)
+    t.eq(run.callCount, 0, 'run has not been called before calling upstream')
+    const result = r(...args)
+    t.eq(run.callCount, 1, 'run has been called from upstream')
+    return result
   })
 
   const hook = {
-    test: spy(z => {
+    harness: spy(z => {
       z.test = ttest
     }),
   }
@@ -486,8 +491,8 @@ test('the hooks argument is filtered out of the args passed down the hooks -> ru
 
   await z.report(blackHole)
 
-  t.eq(hook.test.callCount, 1, 'hook has been called')
-  t.eq(ttest.callCount, 1, 'test decorator has been called')
+  t.eq(hook.harness.callCount, 1, 'hook has been called')
+  t.eq(ttest.callCount, 1, 'core test function has been called')
 })
 
 test('use case: macro', async t => {
@@ -541,7 +546,7 @@ describe('t.test', () => {
       const [z] = args
       t.ok(isTestContext(z))
     })
-    const z = createHarness()
+    createHarness()
     t.eq(run.callCount, 0)
     t.test('', run)
     t.eq(run.callCount, 1)
@@ -569,7 +574,7 @@ describe('t.test', () => {
       t.is(z, zz, 'spec function is called with the same context as plugins')
     })
     const plugin = {
-      test: spy((z, opts) => {
+      test: spy(z => {
         zz = z
         t.ok(isTestContext(z), 'plugins are called with the test context')
       }),
@@ -589,13 +594,13 @@ describe('t.test', () => {
     })
     const plugins = [
       {
-        test: spy((z, opts) => {
+        test: spy(z => {
           zz = z
           t.ok(isTestContext(z), 'plugins are called with the test context')
         }),
       },
       {
-        test: spy((z, opts) => {
+        test: spy(z => {
           t.ok(zz)
           t.is(z, zz, 'plugins are called with the same test context')
         }),
@@ -646,10 +651,7 @@ describe('plugin', () => {
       },
     ]
 
-    const z = createHarnessFactory({ createHarness: createHarnessSpy })(
-      o,
-      plugins
-    )
+    createHarnessFactory({ createHarness: createHarnessSpy })(o, plugins)
 
     t.eq(createHarnessSpy.callCount, 1)
     t.is(
