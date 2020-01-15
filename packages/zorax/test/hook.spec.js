@@ -612,6 +612,13 @@ describe('t.test', () => {
       t.eq(plugin.test.callCount, 1, `plugin #${i} test hook has been run`)
     })
   })
+
+  test("t.test('', [], run)", async t => {
+    const run = spy()
+    const z = createHarness()
+    z.test('', [], run)
+    t.eq(run.callCount, 1, 'spec function has been called')
+  })
 })
 
 describe('plugin', () => {
