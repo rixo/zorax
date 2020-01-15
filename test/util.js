@@ -6,7 +6,8 @@ export const noop = () => {}
 
 export const isFunction = x => typeof x === 'function'
 
-export const isTestContext = o => o && isFunction(o.test) && isFunction(o.ok)
+export const isTestContext = o =>
+  (o && isFunction(o.test) && isFunction(o.ok)) || false
 
 export const isHarness = o => o && isFunction(o.report)
 
@@ -90,26 +91,26 @@ export const describe = (prefix, run) => {
 export const spy = (fn = noop) => {
   const calls = []
 
-  const wrapped = function zora_spec_fn(...args) {
+  const spied = function zora_spec_fn(...args) {
     calls.push(args)
     return fn.apply(this, args)
   }
 
-  Object.defineProperty(wrapped, 'callCount', {
+  Object.defineProperty(spied, 'callCount', {
     get() {
       return calls.length
     },
   })
 
-  wrapped.calls = calls
+  spied.calls = calls
 
-  wrapped.calledWith = (...targetArgs) => t =>
+  spied.calledWith = (...targetArgs) => t =>
     calls.length > 0 &&
     calls.some(args => {
       return targetArgs.every((a, i) => t.is(args[i], a, `argument ${i}`))
     })
 
-  wrapped.hasBeenCalled = (n = null) =>
+  spied.hasBeenCalled = (n = null) =>
     function(t) {
       // let assertResult
       // if (n === null) {
@@ -136,7 +137,7 @@ export const spy = (fn = noop) => {
         : t.equal(calls.length, n, `spy has been called ${n} times`)
     }
 
-  return wrapped
+  return spied
 }
 
 spy.through = fn =>
