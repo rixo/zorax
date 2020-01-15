@@ -58,15 +58,16 @@ const createCustomHarness = createHarnessFactory(
 ## Plugins
 
 * zorax
-  - autostart
-  - default-reporter
-  - hook => zorax/plug
-  - describe
-  - describe-only
-  - macro
-  - only
-  - pass
-  - spy
+  - [x] hook => zorax/plug
+  - [x] autostart
+  - [x] default-reporter
+  - [ ] describe
+  - [ ] describe-only
+  - [ ] macro
+  - [ ] only
+  - [ ] assertions (custom assertions)
+  - [ ] pass
+  - [ ] spy
 
 
 ## Plugin
