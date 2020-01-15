@@ -80,12 +80,21 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
 
     const harness = createHarness(opts)
 
+    // wrap harness.test to recursively apply plugin.test
+    //
+    // WARNING this must be done _before_ applying plugins, because plugins
+    // need to see unaltered incoming arguments... said otherwise, they need
+    // to be the outermost layer of the pipeline
+    //
+    addHooks({ opts, hooks: plugins }, harness)
+
+    // apply harness hooks
     if (plugins.length > 0) {
+      // plugin.harness
       plugins.forEach(applyHook(opts, harness, 'harness'))
+      // plugin.test
       plugins.forEach(applyHook(opts, harness))
     }
-
-    addHooks({ opts, hooks: plugins }, harness)
 
     return harness
   }
