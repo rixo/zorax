@@ -1,3 +1,6 @@
+import withAuto from './auto'
+import { createHarness } from './hook'
+
 export {
   AssertPrototype,
   // createHarness,
@@ -28,3 +31,5 @@ export {
 } from 'zora'
 
 export { createHarness, createHarnessFactory } from './hook'
+
+export const harness = createHarness([withAuto({ auto: true })])
