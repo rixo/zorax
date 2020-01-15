@@ -1,11 +1,13 @@
 import {
   blackHole,
   describe,
+  skip,
   isFunction,
   isHarness,
   isHarnessFactory,
   isTestContext,
   spy,
+  defaultZoraxAutoStart,
 } from './util'
 
 import * as zorax from '../lib/zorax'
@@ -30,6 +32,6 @@ describe('default harness', () => {
   })
 
   test('has auto start enabled', t => {
-    t.eq(harness.auto(), true)
+    t.eq(defaultZoraxAutoStart, true)
   })
 })

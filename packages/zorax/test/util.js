@@ -1,5 +1,7 @@
 import * as zoar from 'zoar'
 
+import { harness as zoraxDefaultHarness } from '../lib/zorax'
+
 export const noop = () => {}
 
 export const isFunction = x => typeof x === 'function'
@@ -11,6 +13,10 @@ export const isHarness = o => o && isFunction(o.report)
 export const isHarnessFactory = fn => isFunction(fn) && isHarness(fn())
 
 const MUTE_SUB_TESTS = true
+
+// disable zorax auto start
+export const defaultZoraxAutoStart = zoraxDefaultHarness.auto()
+zoraxDefaultHarness.auto(false)
 
 export const blackHole = !MUTE_SUB_TESTS
   ? undefined
@@ -60,6 +66,8 @@ const prefixes = Prefix()
 const test = (desc, ...args) => zoar.test(`${prefixes}${desc}`, ...args)
 
 const only = (desc, ...args) => zoar.only(`${prefixes}${desc}`, ...args)
+
+export { skip } from 'zoar'
 
 export const describe = (prefix, run) => {
   prefixes.push(prefix)
