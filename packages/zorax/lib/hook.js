@@ -2,6 +2,14 @@ import * as zora from 'zora'
 
 const pipe = (...fns) => x0 => fns.reduce((x, f) => f(x), x0)
 
+const getter = prop => x => x[prop]
+
+const getOptionsHook = getter('options')
+
+const getHarnessHook = getter('harness')
+
+const getTestHook = getter('test')
+
 const parseTestArgs = ([desc, a, ...rest]) => {
   if (Array.isArray(a)) {
     return [desc, a, ...rest]
@@ -12,12 +20,8 @@ const parseTestArgs = ([desc, a, ...rest]) => {
   }
 }
 
-const applyHook = (opts, t, key = 'test') => hook => {
-  const handler = hook[key]
-  if (!handler) {
-    return
-  }
-  const result = handler(t, opts)
+const applyHookFactory = (opts, t) => hook => {
+  const result = hook(t, opts)
   if (result) {
     throw new Error(
       'Decorators must not return. Please mutate the context object.'
@@ -25,17 +29,17 @@ const applyHook = (opts, t, key = 'test') => hook => {
   }
 }
 
-function testPrototype(...testArgs) {
-  const [desc, hooks, run, ...rest] = parseTestArgs(testArgs)
+function hookableTestPrototype(...testArgs) {
+  const [desc, plugins, run, ...rest] = parseTestArgs(testArgs)
 
   const doRun = (t, ...rest) => run(addHooks(this.args, t), ...rest)
 
-  const allHooks = [...this.hooks, ...hooks]
+  const hooks = [...this.plugins, ...plugins].map(getTestHook).filter(Boolean)
 
   const wrapped =
-    allHooks.length > 0
+    hooks.length > 0
       ? (t, ...args) => {
-          allHooks.forEach(applyHook(this.opts, t))
+          hooks.forEach(applyHookFactory(this.opts, t))
           return doRun(t, ...args)
         }
       : doRun
@@ -44,7 +48,7 @@ function testPrototype(...testArgs) {
 }
 
 const createHookTest = (args, t) =>
-  testPrototype.bind({ test: t.test, args, ...args })
+  hookableTestPrototype.bind({ test: t.test, args, ...args })
 
 const addHooks = (args, o) => {
   o.test = createHookTest(args, o)
@@ -76,7 +80,7 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
       .filter(Boolean)
       .flat()
 
-    opts = pipe(...plugins.map(x => x.options).filter(Boolean))(opts)
+    opts = pipe(...plugins.map(getOptionsHook).filter(Boolean))(opts)
 
     const harness = createHarness(opts)
 
@@ -86,14 +90,21 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
     // need to see unaltered incoming arguments... said otherwise, they need
     // to be the outermost layer of the pipeline
     //
-    addHooks({ opts, hooks: plugins }, harness)
+    addHooks({ opts, plugins }, harness)
 
     // apply harness hooks
     if (plugins.length > 0) {
+      const applyHook = applyHookFactory(opts, harness)
       // plugin.harness
-      plugins.forEach(applyHook(opts, harness, 'harness'))
+      plugins
+        .map(getHarnessHook)
+        .filter(Boolean)
+        .forEach(applyHook)
       // plugin.test
-      plugins.forEach(applyHook(opts, harness))
+      plugins
+        .map(getTestHook)
+        .filter(Boolean)
+        .forEach(applyHook)
     }
 
     return harness
