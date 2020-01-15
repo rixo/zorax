@@ -1,19 +1,12 @@
 import { createHarness as createZoraHarness } from 'zora'
 import { describe, spy, blackHole } from './util'
 
-import {
-  harness as zoraxDefaultHarness,
-  createHarness,
-  createHarnessFactory,
-} from '../lib/zorax'
+import { createHarness, createHarnessFactory } from '../lib/zorax'
 import withAuto from '../lib/auto'
 
 const test = describe('zorax/auto')
 
 const eachBool = callback => [true, false].forEach(callback)
-
-// disable zorax auto start
-zoraxDefaultHarness.auto(false)
 
 // disable zora auto start
 createZoraHarness()
