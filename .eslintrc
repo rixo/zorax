@@ -1,0 +1,5 @@
+extends:
+  - '@rixo'
+
+env:
+  node: true
