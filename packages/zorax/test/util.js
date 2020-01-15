@@ -23,6 +23,12 @@ export const blackHole = !MUTE_SUB_TESTS
   : async stream => {
       // eslint-disable-next-line no-unused-vars
       for await (const message of stream) {
+        switch (message.type) {
+          case 'BAIL_OUT':
+            // eslint-disable-next-line no-console
+            console.error(message.data)
+            continue
+        }
       }
     }
 
