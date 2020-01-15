@@ -58,4 +58,6 @@ describe('default harness', () => {
   test('has auto start enabled', t => {
     t.eq(defaultZoraxAutoStart, true)
   })
+
+  test('has default reporter', t => t.skip('how to test this?'))
 })
