@@ -132,3 +132,5 @@ spy.through = fn =>
   })
 
 spy.returning = x => spy(() => x)
+
+spy.async = (fn = noop) => spy(async (...args) => fn(...args))
