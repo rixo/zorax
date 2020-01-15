@@ -10,6 +10,10 @@
 - main tests can be only'd / grepped
 - sub tests cannot be (safely) only'd
 
+## Features
+
+- [ ] throw exception when root `test` called from outside of describe / root scope
+
 ~~~js
 import { test, describe } from 'zorax'
 
