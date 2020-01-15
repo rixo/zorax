@@ -1,5 +1,5 @@
 import { createHarness as createZoraHarness } from 'zora'
-import { describe, spy, blackHole } from './util'
+import { describe, spy } from './util'
 
 import { createHarness, createHarnessFactory } from '../lib/zorax'
 import withAuto from '../lib/auto'
