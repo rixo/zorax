@@ -22,7 +22,6 @@ zoraxDefaultHarness.auto(false)
 export const blackHole = !MUTE_SUB_TESTS
   ? undefined
   : async stream => {
-      // eslint-disable-next-line no-unused-vars
       for await (const message of stream) {
         switch (message.type) {
           case 'BAIL_OUT':
