@@ -55,10 +55,10 @@ const Prefix = () => {
   }
 
   const reset = prefix => {
+    prefixes = []
     if (prefix) {
-      prefixes = [prefix]
-    } else {
-      prefixes = []
+      prefixes.push(prefix)
+      update()
     }
   }
 
@@ -76,8 +76,8 @@ const only = (desc, ...args) => zoar.only(`${prefixes}${desc}`, ...args)
 export { skip } from 'zoar'
 
 export const describe = (prefix, run) => {
-  prefixes.push(prefix)
   if (run) {
+    prefixes.push(prefix)
     run()
     prefixes.pop()
   } else {
