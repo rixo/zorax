@@ -7,7 +7,7 @@ export default ({
   onReportError = logError,
 } = {}) => ({
   harness: (t, { auto = defaultAuto }) => {
-    const report = t.report.bind(t)
+    const report = t.report
 
     let autoStart = auto
 
@@ -18,7 +18,7 @@ export default ({
 
     t.report = (...args) => {
       autoStart = false
-      return report(...args)
+      return report.apply(t, args)
     }
 
     const maybeStart = () => {

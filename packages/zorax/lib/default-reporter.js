@@ -5,7 +5,7 @@ export default (
   defaultIndentReporter = defaultNoIndentReporter
 ) => ({
   harness: (t, { reporter: optionsReporter, indent = false }) => {
-    const report = t.report.bind(t)
+    const report = t.report
 
     const defaultReporter = optionsReporter
       ? optionsReporter
@@ -14,6 +14,6 @@ export default (
       : defaultNoIndentReporter || tapeTapLike
 
     t.report = (reporter = defaultReporter, ...args) =>
-      report(reporter, ...args)
+      report.call(t, reporter, ...args)
   },
 })
