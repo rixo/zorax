@@ -446,8 +446,9 @@ describe('nested test context', () => {
     t.ok(z.pass, 'tests pass')
 
     t.eq(run.callCount, 1, 'level 0 run has been called')
-    t.ok(
-      dd.every(d => d.callCount === 1),
+    t.eq(
+      dd.map(x => x.callCount),
+      [2, 2],
       'level 0 hooks are called when test run'
     )
 
@@ -720,4 +721,46 @@ test('nested test contexts are wrapped in hookable sig even if no plugins', asyn
   t.ok(z.pass)
   t.eq(run.callCount, 1)
   t.eq(run2.callCount, 1)
+})
+
+test('deeply nested tests', async t => {
+  const spyPlugin = (id, props) => ({
+    id,
+    test: spy(),
+    harness: spy(),
+    ...props,
+  })
+
+  const harnessPlugin = spyPlugin('harness')
+  const z = createHarness([harnessPlugin])
+
+  t.eq(harnessPlugin.test.callCount, 1)
+  t.eq(harnessPlugin.harness.callCount, 1)
+
+  const mainPlugin = spyPlugin('main')
+  const subPlugin = spyPlugin('sub')
+
+  // main test
+  z.test('', [mainPlugin], z => {
+    // harness
+    t.eq(harnessPlugin.test.callCount, 2)
+    t.eq(harnessPlugin.harness.callCount, 1)
+    // main
+    t.eq(mainPlugin.test.callCount, 1)
+
+    // sub test
+    z.test('', [subPlugin], () => {
+      // harness
+      t.eq(harnessPlugin.test.callCount, 3)
+      t.eq(harnessPlugin.harness.callCount, 1)
+      // main
+      t.eq(mainPlugin.test.callCount, 2)
+      // sub
+      t.eq(subPlugin.test.callCount, 1)
+    })
+  })
+
+  await z.report(blackHole)
+
+  t.ok(z.pass)
 })
