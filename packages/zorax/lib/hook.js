@@ -6,8 +6,6 @@ const getter = prop => x => x[prop]
 
 const getOptionsHook = getter('options')
 
-const getHarnessHook = getter('harness')
-
 const getTestHook = getter('test')
 
 const parseTestArgs = ([desc, a, ...rest]) => {
@@ -30,42 +28,52 @@ const enforceNoReturn = result => {
   return result
 }
 
-const applyHookFactory = (t, opts) => hook => enforceNoReturn(hook(t, opts))
+const applyHook = (t, opts) => hook => enforceNoReturn(hook(t, opts))
 
-function hookableTestPrototype(...testArgs) {
-  const [desc, plugins, run, ...rest] = parseTestArgs(testArgs)
+const withPluginsProtos = {
+  simple: function zora_spec_fn(t) {
+    const {
+      ctx: { opts, plugins },
+      run,
+    } = this
 
-  const me = this
+    decorateTestFn(opts, plugins, t)
 
-  const doRun = function zora_spec_fn(t, ...rest) {
-    addHooks(me.opts, me.plugins, t)
-    return run(t, ...rest)
-  }
+    return run(t)
+  },
 
-  const hooks = [...this.plugins, ...plugins].map(getTestHook).filter(Boolean)
+  withHooks: function zora_spec_fn(t) {
+    const {
+      ctx: { opts, plugins },
+      hooks,
+      run,
+    } = this
 
-  const wrappedRun =
-    hooks.length > 0
-      ? t => {
-          // NOTE we need to wrap the ctx _before_ passing it to the first
-          // plugin hook, so that the plugin can use the hook signature
-          addHooks(me.opts, me.plugins, t)
+    // NOTE we need to wrap the ctx _before_ passing it to the first
+    // plugin hook, so that the plugin can use the hook signature
+    decorateTestFn(opts, plugins, t)
 
-          const applyHook = applyHookFactory(t, this.opts)
-          hooks.forEach(applyHook)
+    hooks.forEach(applyHook(t, opts))
 
-          return run(t)
-        }
-      : doRun
-
-  return this.test(desc, wrappedRun, ...rest)
+    return run(t)
+  },
 }
 
-const createHookTest = (opts, plugins, t) =>
-  hookableTestPrototype.bind({ test: t.test, opts, plugins })
+function pluggableTestPrototype(...testArgs) {
+  const [desc, testPlugins, run, ...rest] = parseTestArgs(testArgs)
+  const { plugins, test } = this
 
-const addHooks = (opts, plugins, o) => {
-  o.test = createHookTest(opts, plugins, o)
+  const hooks = [...plugins, ...testPlugins].map(getTestHook).filter(Boolean)
+
+  const proto = withPluginsProtos[hooks.length > 0 ? 'withHooks' : 'simple']
+
+  const withPlugin = proto.bind({ ctx: this, hooks, run })
+
+  return test(desc, withPlugin, ...rest)
+}
+
+const decorateTestFn = (opts, plugins, t) => {
+  t.test = pluggableTestPrototype.bind({ test: t.test, opts, plugins })
 }
 
 export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
@@ -103,7 +111,7 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
     // need to see unaltered incoming arguments... said otherwise, they need
     // to be the outermost layer of the pipeline
     //
-    addHooks(opts, plugins, harness)
+    decorateTestFn(opts, plugins, harness)
 
     // apply harness hooks
     //
@@ -115,7 +123,7 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
       plugins
         .flatMap(pg => [pg.test, pg.harness])
         .filter(Boolean)
-        .forEach(applyHookFactory(harness, opts))
+        .forEach(applyHook(harness, opts))
     }
 
     return harness
