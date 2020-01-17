@@ -15,7 +15,9 @@ export default () => ({
         ? run.title(providedTitle, ...data)
         : providedTitle
 
-      return test(title, meta, t => run(t, ...data))
+      return test(title, meta, function zora_spec_fn(t) {
+        return run(t, ...data)
+      })
     }
   },
 })
