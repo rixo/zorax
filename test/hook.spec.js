@@ -670,3 +670,54 @@ describe('plugin', () => {
     t.eq(plugins[1].options.callCount, 1)
   })
 })
+
+// anti regression
+//
+// the plugin is expecting the hookable signature t.test('', [], t => {})
+//
+// there was a time where nested sub were not wrapped, and given the raw test
+// context directly (resulting in crashing when calling with the hook sig)
+//
+test('nested test contexts are wrapped in hookable signature', async t => {
+  const plugins = [{}]
+
+  const run2 = spy(z => {
+    z.ok(true)
+  })
+
+  const spyPlugin = {
+    test: spy(z => {
+      const { test } = z
+      z.test = (desc, run) => test('x', plugins, run)
+    }),
+  }
+
+  const z = createHarness([spyPlugin])
+
+  z.test('main 2', z => {
+    z.test('sub', run2)
+  })
+
+  await z.report(blackHole)
+
+  t.ok(z.pass)
+  t.eq(spyPlugin.test.callCount, 3)
+  t.eq(run2.callCount, 1)
+})
+
+test('nested test contexts are wrapped in hookable sig even if no plugins', async t => {
+  const z = createHarness()
+  const run = spy()
+  const run2 = spy()
+
+  z.test('main', z => {
+    z.test('simple', run)
+    z.test('hookable', [{}], run2)
+  })
+
+  await z.report(blackHole)
+
+  t.ok(z.pass)
+  t.eq(run.callCount, 1)
+  t.eq(run2.callCount, 1)
+})
