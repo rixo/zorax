@@ -20,39 +20,52 @@ const parseTestArgs = ([desc, a, ...rest]) => {
   }
 }
 
-const applyHookFactory = (opts, t) => hook => {
-  const result = hook(t, opts)
+const noAsyncErrorMsg =
+  'Plugin hooks for harness or test must not return. Please mutate the context object.'
+
+const enforceNoReturn = result => {
   if (result) {
-    throw new Error(
-      'Decorators must not return. Please mutate the context object.'
-    )
+    throw new Error(noAsyncErrorMsg)
   }
+  return result
 }
+
+const applyHookFactory = (t, opts) => hook => enforceNoReturn(hook(t, opts))
 
 function hookableTestPrototype(...testArgs) {
   const [desc, plugins, run, ...rest] = parseTestArgs(testArgs)
 
-  const doRun = (t, ...rest) => run(addHooks(this.args, t), ...rest)
+  const me = this
+
+  const doRun = function zora_spec_fn(t, ...rest) {
+    addHooks(me.opts, me.plugins, t)
+    return run(t, ...rest)
+  }
 
   const hooks = [...this.plugins, ...plugins].map(getTestHook).filter(Boolean)
 
-  const wrapped =
+  const wrappedRun =
     hooks.length > 0
-      ? (t, ...args) => {
-          hooks.forEach(applyHookFactory(this.opts, t))
-          return doRun(t, ...args)
+      ? t => {
+          // NOTE we need to wrap the ctx _before_ passing it to the first
+          // plugin hook, so that the plugin can use the hook signature
+          addHooks(me.opts, me.plugins, t)
+
+          const applyHook = applyHookFactory(t, this.opts)
+          hooks.forEach(applyHook)
+
+          return run(t)
         }
       : doRun
 
-  return this.test(desc, wrapped, ...rest)
+  return this.test(desc, wrappedRun, ...rest)
 }
 
-const createHookTest = (args, t) =>
-  hookableTestPrototype.bind({ test: t.test, args, ...args })
+const createHookTest = (opts, plugins, t) =>
+  hookableTestPrototype.bind({ test: t.test, opts, plugins })
 
-const addHooks = (args, o) => {
-  o.test = createHookTest(args, o)
-  return o
+const addHooks = (opts, plugins, o) => {
+  o.test = createHookTest(opts, plugins, o)
 }
 
 export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
@@ -90,21 +103,19 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
     // need to see unaltered incoming arguments... said otherwise, they need
     // to be the outermost layer of the pipeline
     //
-    addHooks({ opts, plugins }, harness)
+    addHooks(opts, plugins, harness)
 
     // apply harness hooks
+    //
+    // NOTE test hook is applied _before_ harness hook, because a harness is a
+    // test context _and also_ a harness. It makes it easier for plugin to
+    // override test context behavior at harness level.
+    //
     if (plugins.length > 0) {
-      const applyHook = applyHookFactory(opts, harness)
-      // plugin.harness
       plugins
-        .map(getHarnessHook)
+        .flatMap(pg => [pg.test, pg.harness])
         .filter(Boolean)
-        .forEach(applyHook)
-      // plugin.test
-      plugins
-        .map(getTestHook)
-        .filter(Boolean)
-        .forEach(applyHook)
+        .forEach(applyHookFactory(harness, opts))
     }
 
     return harness
