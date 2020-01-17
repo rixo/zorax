@@ -30,50 +30,39 @@ const enforceNoReturn = result => {
 
 const applyHook = (t, opts) => hook => enforceNoReturn(hook(t, opts))
 
-const withPluginsProtos = {
-  simple: function zora_spec_fn(t) {
-    const {
-      ctx: { opts, plugins },
-      run,
-    } = this
-
-    decorateTestFn(opts, plugins, t)
-
-    return run(t)
-  },
-
-  withHooks: function zora_spec_fn(t) {
-    const {
-      ctx: { opts, plugins },
-      hooks,
-      run,
-    } = this
-
+const specWrapper = ({ opts, plugins, hooks, run }) =>
+  function zora_spec_fn(t) {
     // NOTE we need to wrap the ctx _before_ passing it to the first
     // plugin hook, so that the plugin can use the hook signature
     decorateTestFn(opts, plugins, t)
 
-    hooks.forEach(applyHook(t, opts))
+    if (hooks.length) {
+      hooks.forEach(applyHook(t, opts))
+    }
 
     return run(t)
-  },
-}
+  }
 
 function pluggableTestPrototype(...testArgs) {
   const [desc, testPlugins, run, ...rest] = parseTestArgs(testArgs)
-  const { plugins, test } = this
+  const { opts, parentPlugins, test } = this
 
-  const hooks = [...plugins, ...testPlugins].map(getTestHook).filter(Boolean)
+  const plugins = [...parentPlugins, ...testPlugins]
 
-  const proto = withPluginsProtos[hooks.length > 0 ? 'withHooks' : 'simple']
+  const hooks = plugins.map(getTestHook).filter(Boolean)
 
-  const withPlugin = proto.bind({ ctx: this, hooks, run })
+  const withPlugins = specWrapper({
+    opts,
+    plugins,
+    hooks,
+    run,
+  })
 
-  return test(desc, withPlugin, ...rest)
+  return test(desc, withPlugins, ...rest)
 }
 
-const decorateTestFn = (opts, plugins, t) => {
-  t.test = pluggableTestPrototype.bind({ test: t.test, opts, plugins })
+const decorateTestFn = (opts, parentPlugins, t) => {
+  t.test = pluggableTestPrototype.bind({ test: t.test, opts, parentPlugins })
 }
 
 export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
@@ -101,7 +90,9 @@ export const createHarnessFactory = (factoryOpts = {}, defaultPlugins = []) => {
       .filter(Boolean)
       .flat()
 
-    opts = pipe(...plugins.map(getOptionsHook).filter(Boolean))(opts)
+    const reduceOptions = pipe(...plugins.map(getOptionsHook).filter(Boolean))
+
+    opts = reduceOptions(opts)
 
     const harness = createHarness(opts)
 
