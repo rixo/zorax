@@ -1199,6 +1199,10 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
+zora-node-reporter@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/zora-node-reporter/-/zora-node-reporter-0.0.1.tgz#6c71aef42da1ae422bbb556fee96bfa151b99e52"
+
 zora@^3.1.8:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
