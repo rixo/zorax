@@ -559,3 +559,59 @@ describe('test plugin hooks', () => {
     t.ok(complete)
   })
 })
+
+test('decorate hook does not overwrite test', t => {
+  t.test('in harness', t => {
+    const foo = { id: 'foo' }
+    const plugin = {
+      test: z => {
+        z.test = foo
+      },
+      decorate: spy(z => {
+        t.is(z.test, foo)
+      }),
+    }
+    const z = createHarness([plugin])
+    t.eq(plugin.decorate.callCount, 1)
+    t.is(z.test, foo)
+  })
+
+  t.test('in nested test context', t => {
+    const foo = { id: 'foo' }
+    const plugin = {
+      test: z => {
+        z.test.foo = foo
+      },
+      decorate: spy(z => {
+        t.is(z.test.foo, foo)
+      }),
+    }
+    const z = createHarness([plugin])
+    let hasRun = false
+    z.test('main', z => {
+      z.test('sub', z => {
+        z.test('sub sub', z => {
+          t.is(z.test.foo, foo)
+          hasRun = true
+        })
+      })
+    })
+    t.ok(hasRun)
+    t.is(z.test.foo, foo)
+  })
+})
+
+test('decorateHarness hook does not overwrite test', t => {
+  const foo = { id: 'foo' }
+  const plugin = {
+    test: z => {
+      z.test = foo
+    },
+    decorateHarness: spy(z => {
+      t.is(z.test, foo)
+    }),
+  }
+  const z = createHarness([plugin])
+  t.eq(plugin.decorateHarness.callCount, 1)
+  t.is(z.test, foo)
+})

@@ -72,8 +72,8 @@ const wrapTestMethod = (ctx, plugins, target) => {
 
   const withHooks = t => {
     t.plugins = plugins
-    hooks.forEach(hook => hook(t, ctx))
     wrapTestMethod(ctx, plugins, t)
+    hooks.forEach(hook => hook(t, ctx))
     return t
   }
 
@@ -153,9 +153,9 @@ export const createHarnessFactory = (...args) => {
 
     const hooks = getHarnessHooks(plugins)
 
-    hooks.forEach(hook => hook(harness, harness))
-
     wrapTestMethod(harness, plugins, harness)
+
+    hooks.forEach(hook => hook(harness, harness))
 
     return harness
   }
