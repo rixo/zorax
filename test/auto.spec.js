@@ -1,10 +1,12 @@
 import { createHarness as createZoraHarness } from 'zora'
-import { describe, spy } from './util'
+import { describe, test } from 'zorax'
+
+import { spy } from './util'
 
 import { createHarness, createHarnessFactory } from '@/lib/plug'
 import withAuto from '@/lib/auto'
 
-const test = describe('zorax/auto')
+describe(__filename)
 
 const eachBool = callback => [true, false].forEach(callback)
 

@@ -1,8 +1,9 @@
-import { describe, spy, blackHole } from './util'
-
+import { test, describe } from 'zorax'
 import * as zora from 'zora'
 
-const test = describe('zora')
+import { spy, blackHole } from './util'
+
+describe(__filename)
 
 test('extra test arguments are not passed down to test handler', async t => {
   const z = zora.createHarness()
