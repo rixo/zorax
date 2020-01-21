@@ -1,5 +1,5 @@
 export const ZORAX_DEFER = 'zorax.defer'
-export const ZORAX_GROUP = 'zorax.group'
+export const ZORAX_GROUP = 'zorax.group.defer'
 
 export const isFunction = x => typeof x === 'function'
 

@@ -4,7 +4,7 @@ import { blackHole } from './util'
 
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
-import withOnly from '@/lib/defer.only'
+import withOnly from '@/lib/only.defer'
 import withGroup from '@/lib/group.defer'
 import withMacro from '@/lib/macro'
 
@@ -96,13 +96,13 @@ describe('dependencies', () => {
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.defer is after zorax.defer.only', t => {
+  test('throws if zorax.defer is after zorax.only.defer', t => {
     t.throws(() => {
       createHarness([withOnly(), withDefer()])
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.group is after zorax.defer.only', t => {
+  test('throws if zorax.group is after zorax.only.defer', t => {
     t.throws(() => {
       createHarness([withDefer(), withOnly(), withGroup()])
     }, /zorax\.group/)

@@ -1,6 +1,6 @@
 import { ZORAX_DEFER, ZORAX_GROUP, hasName } from './_util'
 
-const name = 'zorax.defer.only'
+const name = 'zorax.only.defer'
 
 const validateDeps = ({ plugins }) => {
   // require zorax.defer

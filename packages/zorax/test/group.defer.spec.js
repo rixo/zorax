@@ -45,7 +45,7 @@ describe('requires zorax.defer', () => {
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.defer is after zorax.defer.group', t => {
+  test('throws if zorax.defer is after zorax.group.defer', t => {
     t.throws(() => {
       createHarness([withGroup(), withDefer()])
     }, /zorax\.defer/)
