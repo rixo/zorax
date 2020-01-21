@@ -6,10 +6,12 @@ export const noop = () => {}
 
 export const isFunction = x => typeof x === 'function'
 
-export const isTestContext = o =>
+export const isAssertions = o =>
   (o && isFunction(o.test) && isFunction(o.ok)) || false
 
-export const isHarness = o => o && isFunction(o.report)
+export const isTestContext = isAssertions
+
+export const isHarness = o => o && isFunction(o.report) && isAssertions(o)
 
 export const isHarnessFactory = fn => isFunction(fn) && isHarness(fn())
 
@@ -69,9 +71,14 @@ const Prefix = () => {
 
 const prefixes = Prefix()
 
-const test = (desc, ...args) => zoar.test(`${prefixes}${desc}`, ...args)
+let inOnlyBlock = false
 
-const only = (desc, ...args) => zoar.only(`${prefixes}${desc}`, ...args)
+const only = (desc, ...args) => zoar.focus(`${prefixes}${desc}`, ...args)
+
+export const test = (desc, ...args) =>
+  inOnlyBlock ? only(desc, ...args) : zoar.test(`${prefixes}${desc}`, ...args)
+
+test.only = only
 
 export { skip } from 'zoar'
 
@@ -83,8 +90,13 @@ export const describe = (prefix, run) => {
   } else {
     prefixes.reset(prefix)
   }
-  test.only = only
   return test
+}
+
+describe.only = (prefix, run) => {
+  inOnlyBlock = true
+  describe(prefix, run)
+  inOnlyBlock = false
 }
 
 export const spy = (fn = noop) => {
