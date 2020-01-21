@@ -127,7 +127,7 @@ describe('hook: defer.add', () => {
     t.eq(push1.callCount, 1)
     t.eq(push2.callCount, 1)
 
-    await z.report()
+    await z.report(bh)
 
     t.test('init hooks are only called once', t => {
       t.eq(p1.defer.add.callCount, 1)
@@ -237,7 +237,7 @@ describe('hook: run', () => {
     t.eq(run1.callCount, 0)
     t.eq(run2.callCount, 0)
 
-    await z.report()
+    await z.report(bh)
 
     t.eq(run1.callCount, 1, 'p1 run is called in report')
     t.eq(run2.callCount, 1, 'p2 run is called in report')
