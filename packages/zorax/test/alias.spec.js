@@ -16,10 +16,12 @@ test('withAlias({ from: to | [...tos] })', t => {
   const foo = {}
   const bar = {}
   const baz = {}
+  const buz = {}
   const plugin = {
     test: z => {
       z.foo = foo
       z.baz = baz
+      z.buz = buz
     },
     harness: h => {
       h.bar = bar
@@ -27,17 +29,18 @@ test('withAlias({ from: to | [...tos] })', t => {
   }
 
   const z = createHarness([
-    withAlias({
-      test: {
+    withAlias(
+      {
         foo: ['foot', 'foob'],
         baz: 'zap',
         nonExistant: 'pif',
+        buz: 'test.buzz',
       },
-      harness: {
+      {
         foo: 'fooh',
-        bar: ['barb', 'babar'],
-      },
-    }),
+        bar: ['barb', 'babar', 'test.baar'],
+      }
+    ),
     plugin,
   ])
 
@@ -63,12 +66,14 @@ test('withAlias({ from: to | [...tos] })', t => {
       t.is(z.foob, foo, 'test alias multi (2)')
       t.is(z.zap, baz, 'test alias single')
       t.is(z.pif, undefined, 'non existant target')
+      t.is(z.test.buzz, buz, 'dotted notation')
     })
     t.test('harness specific aliases', t => {
       t.is(z.fooh, foo, 'harness specific single')
       t.is(z.barb, bar, 'harness specific multiple')
       t.is(z.babar, bar, 'harness specific multiple')
       t.is(z.pif, undefined, 'non existant target')
+      t.is(z.test.baar, bar, 'dotted notation')
     })
   })
 
@@ -81,6 +86,7 @@ test('withAlias({ from: to | [...tos] })', t => {
           t.is(z.foob, foo, 'test alias multi (2)')
           t.is(z.zap, baz, 'test alias single')
           t.is(z.pif, undefined, 'non existant target')
+          t.is(z.test.buzz, buz, 'dotted notation')
           hasRun = true
         })
       })
