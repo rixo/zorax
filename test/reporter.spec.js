@@ -1,8 +1,8 @@
 import { mochaTapLike, tapeTapLike } from 'zora'
 import { describe, spy } from './util'
 
-import { createHarness, createHarnessFactory } from '../lib/zorax'
-import withDefaultReporter from '../lib/default-reporter'
+import { createHarness, createHarnessFactory } from '@/lib/plug'
+import withDefaultReporter from '@/lib/reporter'
 
 const spyReporter = () => {
   const messages = []
