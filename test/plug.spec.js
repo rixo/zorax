@@ -23,6 +23,17 @@ const spyPlug = ({ test, harness, decorate, decorateHarness } = {}) => ({
     decorateHarness && spy(decorateHarness === true ? spy() : decorateHarness),
 })
 
+spyPlug.reset = (...plugins) => {
+  for (const pg of plugins.flat()) {
+    Object.values(pg)
+      .filter(Boolean)
+      .map(fn => fn.calls)
+      .forEach(calls => {
+        calls.splice(0, calls.length)
+      })
+  }
+}
+
 const spies = () =>
   new Proxy(
     {},
@@ -499,13 +510,27 @@ describe('hook order', () => {
   )
 
   test('createHarness().plug(pg1, pg2)', testHooksOrder, (...plugins) =>
-    createHarness().run(z => z.plug(...plugins).test('', noop))
+    createHarness().run(z => z.plug(...plugins))
+  )
+
+  test(
+    'createHarness().plug(pg1, pg2).test(...)',
+    testHooksOrder,
+    (...plugins) =>
+      createHarness().run(z => {
+        const zz = z.plug(...plugins)
+        spyPlug.reset(plugins)
+        zz.test('', noop)
+      }),
+    1
   )
 
   test('t.plug(pg1, pg2)', testHooksOrder, (...plugins) =>
     createHarness().run(z => {
       z.test('', t => {
-        t.plug(...plugins).test('', noop)
+        const zz = t.plug(...plugins)
+        spyPlug.reset(plugins)
+        zz.test('', noop)
       })
     })
   )
@@ -537,6 +562,7 @@ describe('test plugin hooks', () => {
     let complete = false
     z.test('', zt => {
       const zz = zt.plug(plugin)
+      spyPlug.reset(plugin)
       t.eq(plugin.test.callCount, 0)
       t.eq(plugin.decorate.callCount, 0)
       zz.test('', ztt => {
