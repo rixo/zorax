@@ -1,6 +1,6 @@
 import createNextHarness from './zorax.defaults'
 
-export { createHarness, createHarnessFactory } from './hook'
+export { createHarness, createHarnessFactory } from './plug'
 
 // export const harness = createDefaultHarness()
 export const harness = createNextHarness()

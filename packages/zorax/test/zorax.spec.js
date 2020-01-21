@@ -3,7 +3,7 @@ import { test, describe } from 'zorax'
 import { blackHole, isHarness, isHarnessFactory } from './util'
 
 import * as zorax from '@/lib/zorax'
-import createNextHarness from '@/lib/zorax.defaults'
+import createDefaultHarness from '@/lib/zorax.defaults'
 
 const isFunction = x => typeof x === 'function'
 
@@ -80,5 +80,5 @@ describe('default harness', () => {
     })
   }
 
-  test('next', defaultHarness, createNextHarness)
+  test('next', defaultHarness, createDefaultHarness)
 })
