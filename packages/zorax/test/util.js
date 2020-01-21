@@ -1,5 +1,3 @@
-import * as zoar from 'zoar'
-
 import { harness as zoraxDefaultHarness } from '../lib/zorax'
 
 export const noop = () => {}
@@ -33,71 +31,6 @@ export const blackHole = !MUTE_SUB_TESTS
         }
       }
     }
-
-const Prefix = () => {
-  let prefixes = []
-  let currentPrefix = ''
-
-  const update = () => {
-    if (prefixes.length > 0) {
-      currentPrefix = [...prefixes, ''].join(' > ')
-    } else {
-      currentPrefix = ''
-    }
-  }
-
-  const push = prefix => {
-    prefixes.push(prefix)
-    update()
-  }
-
-  const pop = () => {
-    prefixes.pop()
-    update()
-  }
-
-  const reset = prefix => {
-    prefixes = []
-    if (prefix) {
-      prefixes.push(prefix)
-      update()
-    }
-  }
-
-  const toString = () => currentPrefix
-
-  return { push, pop, reset, toString }
-}
-
-const prefixes = Prefix()
-
-let inOnlyBlock = false
-
-const only = (desc, ...args) => zoar.focus(`${prefixes}${desc}`, ...args)
-
-export const test = (desc, ...args) =>
-  inOnlyBlock ? only(desc, ...args) : zoar.test(`${prefixes}${desc}`, ...args)
-
-test.only = only
-
-export { skip } from 'zoar'
-
-export const describe = (prefix, run) => {
-  if (run) {
-    prefixes.push(prefix)
-    run()
-    prefixes.pop()
-  } else {
-    prefixes.reset(prefix)
-  }
-  return test
-}
-
-describe.only = (prefix, run) => {
-  inOnlyBlock = true
-  describe(prefix, run)
-  inOnlyBlock = false
-}
 
 export const spy = (fn = noop) => {
   const calls = []

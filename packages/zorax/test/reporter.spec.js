@@ -1,5 +1,6 @@
 import { mochaTapLike, tapeTapLike } from 'zora'
-import { describe, spy } from './util'
+import { test, describe } from 'zorax'
+import { spy } from './util'
 
 import { createHarness, createHarnessFactory } from '@/lib/plug'
 import withDefaultReporter from '@/lib/reporter'
@@ -13,7 +14,7 @@ const spyReporter = () => {
   })
 }
 
-const test = describe('default-reporter')
+describe(__filename)
 
 test('is a function', t => {
   t.ok(typeof withDefaultReporter === 'function')
