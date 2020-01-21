@@ -2,15 +2,6 @@ import { createHarness as createZoraHarness } from 'zora'
 
 const noop = () => {}
 
-// const getHooks = (...props) => plugins =>
-//   plugins.flatMap(plugin => props.map(prop => plugin[prop])).filter(Boolean)
-//
-// const getHarnessHooks = (() => {
-//   const getMutators = getHooks('test', 'harness')
-//   const getDecorators = getHooks('decorate', 'decorateHarness')
-//   return plugins => [...getMutators(plugins), ...getDecorators(plugins)]
-// })()
-
 const getHarnessMutators = pg => [pg.test, pg.harness]
 
 const getHarnessDecorators = pg => [pg.decorate, pg.decorateHarness]
@@ -30,15 +21,10 @@ const getTestHooks = plugins =>
     Boolean
   )
 
-// const createProxy = harness => ({
-//   test: (...args) => harness.test(...args),
-//   // only: (...args) => harness.only(...args),
-//   // skip: (...args) => harness.skip(...args),
-// })
-
-const deleteHarnessSpecifiers = {
+// NOTE prop: {} makes it undefined
+const proxySpecifiers = {
   report: {},
-  pass: {},
+  pass: { writable: true }, // zora.pass wants to rewrite this
   error: {},
   length: {},
   count: {},
@@ -47,7 +33,7 @@ const deleteHarnessSpecifiers = {
   failureCount: {},
 }
 
-const createProxy = t => Object.create(t, deleteHarnessSpecifiers)
+const createProxy = t => Object.create(t, proxySpecifiers)
 
 const createPlug = (ctx, parentPlugins, target, ...newPluginsInput) => {
   const newPlugins = newPluginsInput.filter(Boolean)
@@ -64,18 +50,18 @@ const createPlug = (ctx, parentPlugins, target, ...newPluginsInput) => {
 
   const plugins = [...parentPlugins, ...newPlugins]
 
-  wrapTestMethod(ctx, plugins, proxy)
+  wrapTestMethod(ctx, plugins, proxy, true)
 
   return proxy
 }
 
-const wrapTestMethod = (ctx, plugins, target) => {
+const wrapTestMethod = (harness, plugins, target, applyHooks) => {
   const hooks = getTestHooks(plugins)
 
   const withHooks = t => {
     t.plugins = plugins
-    wrapTestMethod(ctx, plugins, t)
-    hooks.forEach(hook => hook(t, ctx))
+    wrapTestMethod(harness, plugins, t)
+    hooks.forEach(hook => hook(t, harness))
     return t
   }
 
@@ -87,12 +73,17 @@ const wrapTestMethod = (ctx, plugins, target) => {
   }
 
   target.plug = (...newPlugins) =>
-    createPlug(ctx, plugins, target, ...newPlugins)
+    createPlug(harness, plugins, target, ...newPlugins)
 
   // TODO test
   target.run = fn => {
     fn(target)
     return target
+  }
+
+  // NOTE apply hooks _after_ replacing test!
+  if (applyHooks) {
+    hooks.forEach(hook => hook(target, harness))
   }
 }
 
