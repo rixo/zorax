@@ -49,7 +49,9 @@ const deleteHarnessSpecifiers = {
 
 const createProxy = t => Object.create(t, deleteHarnessSpecifiers)
 
-const createPlug = (ctx, parentPlugins, target, ...newPlugins) => {
+const createPlug = (ctx, parentPlugins, target, ...newPluginsInput) => {
+  const newPlugins = newPluginsInput.filter(Boolean)
+
   newPlugins.forEach(pg => {
     if (pg.harness || pg.decorateHarness) {
       throw new Error(
@@ -146,7 +148,7 @@ export const createHarnessFactory = (...args) => {
 
     const harness = createHarness(options, ...args)
 
-    const plugins = [...factoryPlugins, ...harnessPlugins]
+    const plugins = [...factoryPlugins, ...harnessPlugins].filter(Boolean)
 
     harness.options = options
     harness.plugins = plugins

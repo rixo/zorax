@@ -36,6 +36,17 @@ const spies = () =>
     }
   )
 
+const filtersOutFalsy = (t, init) => {
+  const foo = {}
+  const bar = {}
+  const plugins = [false, foo, null, undefined, '', bar]
+  const z = init(plugins)
+  t.ok(isHarness(z))
+  t.eq(z.plugins, [foo, bar])
+}
+
+filtersOutFalsy.title = pre => pre + 'filters out falsy plugins'
+
 describe(__filename)
 
 test("import { createHarnessFactory } from 'zorax/lib/plug'", t => {
@@ -117,6 +128,8 @@ describe('createHarnessFactory', () => {
     t.eq(z.options, {})
     t.eq(z.plugins, plugins)
   })
+
+  test(filtersOutFalsy, plugins => createHarnessFactory(plugins)())
 })
 
 describe('createHarness', () => {
@@ -155,6 +168,8 @@ describe('createHarness', () => {
     t.eq(z.options, {})
     t.eq(z.plugins, plugins)
   })
+
+  test(filtersOutFalsy, plugins => createHarness(plugins))
 })
 
 test('harness.options: attaches options to the harness', t => {
@@ -316,44 +331,20 @@ describe('plug', () => {
 })
 
 describe('harness.plug(plugin)', () => {
-  // test('calls test and harness plugin hooks', t => {
-  //   const plugin = spyPlug()
-  //   const { test, harness } = plugin
-  //   const run = spies()
-  //
-  //   const z = createHarness().plug(plugin)
-  //
-  //   t.eq(test.callCount, 1, 'calls test hook initially')
-  //   t.eq(harness.callCount, 1, 'calls harness hook initially')
-  //
-  //   z.test(
-  //     'main',
-  //     run.main(z => {
-  //       t.eq(test.callCount, 2, 'test hook called after main test')
-  //       t.eq(harness.callCount, 1, 'harness hook not called after main')
-  //
-  //       z.test(
-  //         'sub',
-  //         run.sub(z => {
-  //           t.eq(test.callCount, 3, 'test hook called after sub test')
-  //           t.eq(harness.callCount, 1, 'harness hook not called after sub')
-  //
-  //           z.test(
-  //             'sub sub',
-  //             run.subsub(() => {
-  //               t.eq(test.callCount, 4, 'test hook called after sub sub test')
-  //               t.eq(harness.callCount, 1, 'harness hook not after sub sub')
-  //             })
-  //           )
-  //         })
-  //       )
-  //     })
-  //   ) // -- z.test('main', ...)
-  //
-  //   t.eq(run.main.callCount, 1, 'main test runs')
-  //   t.eq(run.sub.callCount, 1, 'sub test runs')
-  //   t.eq(run.subsub.callCount, 1, 'sub sub test runs')
-  // })
+  test('filters out falsy plugins', async t => {
+    const foo = {}
+    const bar = {}
+    const plugins = [false, foo, null, undefined, '', bar]
+    let done = false
+    createHarness()
+      .plug(...plugins)
+      .test('', z => {
+        t.ok(isTestContext(z))
+        t.eq(z.plugins, [foo, bar])
+        done = true
+      })
+    t.ok(done)
+  })
 
   test('wrapped contexts have a plug method', t => {
     const plugin = {}
