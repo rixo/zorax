@@ -9,7 +9,7 @@ export default ({
 } = {}) => ({
   name: 'zorax.auto',
 
-  harness: (t, { auto = defaultAuto }) => {
+  harness: (t, { options: { auto = defaultAuto } }) => {
     const report = t.report
 
     let autoStart = auto

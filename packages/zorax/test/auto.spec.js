@@ -1,8 +1,8 @@
 import { createHarness as createZoraHarness } from 'zora'
 import { describe, spy } from './util'
 
-import { createHarness, createHarnessFactory } from '../lib/zorax'
-import withAuto from '../lib/auto'
+import { createHarness, createHarnessFactory } from '@/lib/plug'
+import withAuto from '@/lib/auto'
 
 const test = describe('zorax/auto')
 
