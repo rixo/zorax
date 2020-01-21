@@ -38,6 +38,20 @@ test('', t => {
   t.pass()
 })
 
+describe('requires zorax.defer', () => {
+  test('throws if zorax.defer is missing', t => {
+    t.throws(() => {
+      createHarness([withGroup()])
+    }, /zorax\.defer/)
+  })
+
+  test('throws if zorax.defer is after zorax.defer.group', t => {
+    t.throws(() => {
+      createHarness([withGroup(), withDefer()])
+    }, /zorax\.defer/)
+  })
+})
+
 describe('collected assertions', () => {
   const testAssertions = (
     desc,

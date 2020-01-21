@@ -1,4 +1,9 @@
+const ZORAX_DEFER = 'zorax.defer'
+const name = 'zorax.defer.group'
+
 const isFunction = x => typeof x === 'function'
+
+const hasName = name => ({ name: x }) => x === name
 
 const enforceNoAsync = result => {
   if (result && isFunction(result.then) && isFunction(result.catch)) {
@@ -7,7 +12,18 @@ const enforceNoAsync = result => {
 }
 
 export default () => ({
-  name: 'group.defer',
+  name,
+
+  harness: ({ plugins }) => {
+    const deferIndex = plugins.findIndex(hasName(ZORAX_DEFER))
+    if (deferIndex === -1) {
+      throw new Error(`${name} requires ${ZORAX_DEFER}`)
+    }
+    const index = plugins.findIndex(hasName(name))
+    if (index < deferIndex) {
+      throw new Error(`${name} must be after ${ZORAX_DEFER}`)
+    }
+  },
 
   defer: {
     add: (_add, harness) => {
