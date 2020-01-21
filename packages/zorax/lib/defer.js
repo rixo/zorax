@@ -11,7 +11,7 @@ const Deferred = () => {
 }
 
 export default () => ({
-  name: 'defer',
+  name: 'zorax.defer',
 
   harness: (...args) => {
     const [h, { plugins }] = args
@@ -44,11 +44,32 @@ export default () => ({
 
     const addTest = addHooks.reduce((push, hook) => hook(push, h), pushTest)
 
-    const runTest = runHooks.reduce((run, hook) => hook(run, h), runTestInCtx)
+    const runTestIn = runHooks.reduce((run, hook) => hook(run, h), runTestInCtx)
+
+    // h.defer.runner(t)
+    //   => (spec => { /* run */ })
+    //
+    // Allows a plugin to run specs through the entire run pipeline, not just
+    // what's before them.
+    //
+    // defer     A             B
+    //
+    //          if (...) <--- filter <---|
+    //            |                      |
+    //           then -------------------|
+    //            |                 ^
+    //  run <--- else    h.defer.runner(t)
+    //
+    h.defer = {
+      runner: runTestIn,
+    }
 
     const flush = () => {
       reporting = true
-      tests.forEach(runTest(h))
+      const runSpec = runTestIn(h)
+      for (const spec of tests) {
+        runSpec(spec)
+      }
       reporting = false
     }
 

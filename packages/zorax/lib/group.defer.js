@@ -1,9 +1,4 @@
-const ZORAX_DEFER = 'zorax.defer'
-const name = 'zorax.defer.group'
-
-const isFunction = x => typeof x === 'function'
-
-const hasName = name => ({ name: x }) => x === name
+import { ZORAX_DEFER, ZORAX_GROUP as name, isFunction, hasName } from './_util'
 
 const enforceNoAsync = result => {
   if (result && isFunction(result.then) && isFunction(result.catch)) {
@@ -15,10 +10,12 @@ export default () => ({
   name,
 
   harness: ({ plugins }) => {
+    // require defer
     const deferIndex = plugins.findIndex(hasName(ZORAX_DEFER))
     if (deferIndex === -1) {
       throw new Error(`${name} requires ${ZORAX_DEFER}`)
     }
+    // must be after defer
     const index = plugins.findIndex(hasName(name))
     if (index < deferIndex) {
       throw new Error(`${name} must be after ${ZORAX_DEFER}`)
@@ -73,23 +70,19 @@ export default () => ({
       return add
     },
 
-    run: up => {
-      const runInContext = ctx => {
-        const runTest = up(ctx)
-        return spec => {
-          if (Array.isArray(spec)) {
-            const [title, subTests] = spec
-            const handler = t => {
-              subTests.forEach(runInContext(t))
-            }
-            // alternative: ctx.test(title, handler)
-            runTest({ args: [title, handler] })
-          } else {
-            runTest(spec)
+    run: (prev, h) => t => {
+      const runSpec = prev(t)
+      return spec => {
+        if (Array.isArray(spec)) {
+          const [title, subTests] = spec
+          const handler = tt => {
+            subTests.forEach(h.defer.runner(tt))
           }
+          runSpec({ args: [title, handler] })
+        } else {
+          runSpec(spec)
         }
       }
-      return runInContext
     },
   },
 })
