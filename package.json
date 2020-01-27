@@ -33,5 +33,8 @@
     "zora": "^3.1.8",
     "zora-node-reporter": "^0.0.1",
     "zorax": "^0.0.1"
+  },
+  "scripts": {
+    "test": "zoar"
   }
 }
