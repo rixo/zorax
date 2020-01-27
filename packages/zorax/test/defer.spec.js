@@ -3,7 +3,7 @@ import { describe, test } from 'zorax'
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
 
-import { blackHole as bh, isHarness, spy } from './util'
+import { arrayReporter, blackHole as bh, isHarness, spy } from './util'
 
 describe(__filename)
 
@@ -50,6 +50,31 @@ test('defers failing test', async t => {
 
   t.eq(run.callCount, 1)
   t.eq(run2.callCount, 1)
+})
+
+test('defers skipped test', async t => {
+  const z = createHarness([withDefer()])
+
+  t.ok(isHarness(z))
+
+  const run = spy(t => {
+    t.ok(true, 'passes')
+  })
+
+  z.skip('skip!', run)
+
+  t.eq(run.callCount, 0)
+
+  const { reporter, messages } = arrayReporter()
+
+  await z.report(reporter)
+
+  t.eq(run.callCount, 0)
+  t.ok(z.pass)
+  t.eq(
+    messages.map(x => [x.offset, x.data.description, x.data.pass]),
+    [[0, 'skip!', true]]
+  )
 })
 
 test('defers sub tests', async t => {
@@ -198,7 +223,7 @@ describe('hook: defer.add', () => {
   })
 })
 
-describe('hook: run', () => {
+describe('hook: defer.run', () => {
   test('calls hooks init left to right, returned run functions right to left', async t => {
     let run1
     let run2
