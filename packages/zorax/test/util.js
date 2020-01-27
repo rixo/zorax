@@ -17,6 +17,7 @@ const MUTE_SUB_TESTS = true
 
 // disable zorax auto start
 export const defaultZoraxAutoStart = zoraxDefaultHarness.auto()
+
 zoraxDefaultHarness.auto(false)
 
 export const blackHole = !MUTE_SUB_TESTS
@@ -31,6 +32,28 @@ export const blackHole = !MUTE_SUB_TESTS
         }
       }
     }
+
+const isBailOut = ({ type }) => type === 'BAIL_OUT'
+
+const isAssertionMessage = ({ type }) => type === 'ASSERTION'
+
+export const arrayReporter = ({
+  filter = isAssertionMessage,
+  error = isBailOut,
+} = {}) => {
+  const messages = []
+  const reporter = async stream => {
+    for await (const msg of stream) {
+      if (filter(msg)) {
+        messages.push(msg)
+      } else if (error(msg)) {
+        // eslint-disable-next-line no-console
+        console.error(msg.data)
+      }
+    }
+  }
+  return Object.assign(reporter, { reporter, messages })
+}
 
 export const spy = (fn = noop) => {
   const calls = []

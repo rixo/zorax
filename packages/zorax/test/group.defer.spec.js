@@ -1,31 +1,12 @@
 import { test, describe } from 'zorax'
 
+import { arrayReporter } from './util'
+
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
 import withGroup from '@/lib/group.defer'
 
 describe(__filename)
-
-const yep = () => true
-
-const isAssertionMessage = ({ type }) => type === 'ASSERTION'
-
-const isBailOut = ({ type }) => type === 'BAIL_OUT'
-
-const arrayReporter = ({ filter = yep, error = isBailOut } = {}) => {
-  const messages = []
-  const reporter = async stream => {
-    for await (const msg of stream) {
-      if (filter(msg)) {
-        messages.push(msg)
-      } else if (error(msg)) {
-        // eslint-disable-next-line no-console
-        console.error(msg.data)
-      }
-    }
-  }
-  return Object.assign(reporter, { reporter, messages })
-}
 
 const createHarnessWithGroup = () => createHarness([withDefer(), withGroup()])
 
@@ -64,9 +45,7 @@ describe('collected assertions', () => {
 
       await run(z)
 
-      const { reporter, messages } = arrayReporter({
-        filter: isAssertionMessage,
-      })
+      const { reporter, messages } = arrayReporter()
 
       await z.report(reporter)
 
