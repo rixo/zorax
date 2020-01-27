@@ -193,6 +193,32 @@ describe('collected assertions', () => {
     ]
   )
 
+  testAssertions(
+    'no test is created for empty groups',
+    // NOTE this test should probably be synchronzied with await
+    z => {
+      // z.group('empty', () => {})
+      z.group('empty with empty subs', () => {
+        z.group('empty sub', () => {})
+      })
+      z.group('g1', () => {
+        z.group('g1 empty', () => {})
+        z.group('g2', () => {
+          z.group('g2 empty', () => {})
+          z.test('t1', z => {
+            z.ok(true)
+          })
+        })
+      })
+    },
+    [
+      [3, 'should be truthy', true],
+      [2, 't1', true],
+      [1, 'g2', true],
+      [0, 'g1', true],
+    ]
+  )
+
   // testAssertions(
   //   'group nested in sub test',
   //   z => {
