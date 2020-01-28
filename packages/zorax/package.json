@@ -27,10 +27,12 @@
     "lib": "lib",
     "test": "test"
   },
+  "dependencies": {
+    "zora": "^3.1.8"
+  },
   "devDependencies": {
     "@rixo/eslint-config": "^0.8.1",
     "esm": "^3.2.25",
-    "zora": "^3.1.8",
     "zorax": "^0.0.2"
   },
   "scripts": {
