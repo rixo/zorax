@@ -19,23 +19,31 @@
     "url": "git@github.com:rixo/zorax.git"
   },
   "private": false,
-  "main": "lib/zorax.js",
+  "main": "dist/zorax.js",
+  "module": "lib/index.js",
   "files": [
-    "lib"
+    "dist"
   ],
   "directories": {
     "lib": "lib",
     "test": "test"
   },
   "dependencies": {
-    "zora": "^3.1.8"
+    "zora": "^3.0.0"
   },
   "devDependencies": {
     "@rixo/eslint-config": "^0.8.1",
+    "@rollup/plugin-commonjs": "^11.0.1",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "builtin-modules": "^3.1.0",
     "esm": "^3.2.25",
+    "rollup": "^1.30.1",
     "zorax": "^0.0.2"
   },
   "scripts": {
+    "clean": "rm -f dist/*",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
     "test": "zoar"
   }
 }
