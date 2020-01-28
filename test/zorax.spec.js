@@ -47,38 +47,34 @@ test('exports default harness', t => {
   t.ok(isHarness(zorax.harness))
 })
 
-describe('default harness', () => {
-  const defaultHarness = (t, createHarness) => {
-    const harness = createHarness({
-      reporter: blackHole,
-    })
+test('default harness', t => {
+  const harness = createDefaultHarness({
+    reporter: blackHole,
+  })
 
-    t.test('has auto start plugin', t => {
-      t.ok(isFunction(harness.auto))
-    })
+  t.test('has auto start plugin', t => {
+    t.ok(isFunction(harness.auto))
+  })
 
-    t.test('has auto start enabled', t => {
-      t.eq(harness.auto(), true)
-    })
+  t.test('has auto start enabled', t => {
+    t.eq(harness.auto(), true)
+  })
 
-    t.test('has default reporter', t => t.skip('how to test this?'))
+  t.test('has default reporter', t => t.skip('how to test this?'))
 
-    t.test('has describe', t => {
-      t.ok(isFunction(harness.describe))
-    })
+  t.test('has describe', t => {
+    t.ok(isFunction(harness.describe))
+  })
 
-    t.test('has only', t => {
-      t.ok(isFunction(harness.test.only))
-    })
+  t.test('has only', t => {
+    t.ok(isFunction(harness.test.only))
+  })
 
-    t.test('has pass', t => {
-      t.ok(isFunction(harness.pass))
-    })
+  t.test('has pass', t => {
+    t.ok(isFunction(harness.pass))
+  })
 
-    t.test('has todo', t => {
-      t.ok(isFunction(harness.test.todo))
-    })
-  }
-
-  test('next', defaultHarness, createDefaultHarness)
+  t.test('has todo', t => {
+    t.ok(isFunction(harness.test.todo))
+  })
 })
