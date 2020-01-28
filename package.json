@@ -18,7 +18,6 @@
     "type": "git",
     "url": "git@github.com:rixo/zorax.git"
   },
-  "private": false,
   "main": "dist/zorax.js",
   "module": "lib/index.js",
   "files": [
