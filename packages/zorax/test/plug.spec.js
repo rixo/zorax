@@ -180,6 +180,16 @@ describe('createHarness', () => {
     t.eq(z.plugins, plugins)
   })
 
+  test('createHarness([...plugins], {...config})', t => {
+    const plugins = [{}, {}]
+    const options = { auto: false }
+    const z = createHarness(options, plugins)
+    t.ok(isHarness(z), 'returns a test harness')
+    t.ok(isFunction(z.plug), 'harness.plug is a function')
+    t.eq(z.options, options)
+    t.eq(z.plugins, plugins)
+  })
+
   test(filtersOutFalsy, plugins => createHarness(plugins))
 })
 
