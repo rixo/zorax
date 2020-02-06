@@ -76,8 +76,8 @@ describe(__filename)
 
 const { test } = plug(withIsFunction, withShouldRun)
 
-const createOnlyHarness = ({ group = true, macro = false } = {}) =>
-  createHarness([
+const createOnlyHarness = ({ only = true, group = true, macro = false } = {}) =>
+  createHarness({ only }, [
     withDefer(),
     group && withGroup(),
     withOnly(),
@@ -106,6 +106,26 @@ describe('dependencies', () => {
     t.throws(() => {
       createHarness([withDefer(), withOnly(), withGroup()])
     }, /zorax\.group/)
+  })
+})
+
+describe('`only` harness option', () => {
+  test('t.only throws when only option is not set', t => {
+    const z = createOnlyHarness({ group: true, macro: true, only: false })
+    t.throws(() => {
+      z.only('bim', () => {})
+    }, /only flag/)
+  })
+
+  test('only option can be changed on the fly', t => {
+    const z = createOnlyHarness({ group: true, macro: true, only: true })
+    t.doesNotThrow(() => {
+      z.only('bim', () => {})
+    }, /only flag/)
+    z.options.only = false // <- <- <-
+    t.throws(() => {
+      z.only('bim', () => {})
+    }, /only flag/)
   })
 })
 
