@@ -1283,7 +1283,7 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-zora@^3.1.8:
+zora@^3.0.0:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
 
