@@ -68,7 +68,17 @@ const wrapTestMethod = (harness, plugins, target, applyHooks) => {
   const { test } = target
 
   target.test = (desc, run, ...rest) => {
+    // just a friendly sanity check: end of pipeline respects expected signature
+    if (
+      // undefined title is actually more or less allowed
+      (typeof desc !== 'undefined' && typeof desc !== 'string') ||
+      typeof run !== 'function'
+    ) {
+      throw new Error('plugins pipeline in disarray')
+    }
+
     const zora_spec_fn = (t, ...rest) => run(withHooks(t), ...rest)
+
     return test(desc, zora_spec_fn, ...rest)
   }
 
