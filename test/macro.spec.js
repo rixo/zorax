@@ -1,4 +1,4 @@
-import { test, describe } from 'zorax'
+import { test, describe } from '@@'
 
 import { blackHole, isFunction, isHarness, isTestContext, spy } from './util'
 

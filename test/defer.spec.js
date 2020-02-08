@@ -1,4 +1,4 @@
-import { describe, test } from 'zorax'
+import { describe, test } from '@@'
 
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'

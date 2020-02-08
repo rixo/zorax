@@ -1,4 +1,4 @@
-import { test, describe } from 'zorax'
+import { describe, test } from '@@'
 
 import { arrayReporter } from './util'
 
