@@ -1,4 +1,4 @@
-import { harness as zoraxDefaultHarness } from '../lib/zorax'
+// import { harness as zoraxDefaultHarness } from '../lib/zorax'
 
 export const noop = () => {}
 
@@ -16,9 +16,9 @@ export const isHarnessFactory = fn => isFunction(fn) && isHarness(fn())
 const MUTE_SUB_TESTS = true
 
 // disable zorax auto start
-export const defaultZoraxAutoStart = zoraxDefaultHarness.auto()
+// export const defaultZoraxAutoStart = zoraxDefaultHarness.auto()
 
-zoraxDefaultHarness.auto(false)
+// zoraxDefaultHarness.auto(false)
 
 export const blackHole = !MUTE_SUB_TESTS
   ? undefined
