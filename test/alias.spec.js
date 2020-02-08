@@ -1,11 +1,9 @@
-import { describe, test } from 'zorax'
+import { test } from '@@'
 
 import { createHarness } from '@/lib/plug'
 import withAlias from '@/lib/alias'
 
 import { isHarness } from './util'
-
-describe(__filename)
 
 test('does not break createHarness', t => {
   const z = createHarness([withAlias({})])
