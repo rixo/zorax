@@ -1,3 +1,5 @@
+import { ZORAX_DEFER as name } from './names.js'
+
 /**
  * zorax/defer
  */
@@ -11,17 +13,17 @@ const Deferred = () => {
 }
 
 export default () => ({
-  name: 'zorax.defer',
+  name,
 
   harness: (...args) => {
     const [h, { plugins }] = args
     const mainTest = h.test
     const mainSkip = h.skip
 
-    const tests = []
+    let tests = []
 
+    let running = false
     let reporting = false
-    let locked = false
 
     const pushTest = spec => {
       tests.push(spec)
@@ -44,9 +46,17 @@ export default () => ({
 
     const runHooks = deferPlugins.map(defer => defer.run).filter(Boolean)
 
-    const addTest = addHooks.reduce((push, hook) => hook(push, h), pushTest)
+    const _addTest = addHooks.reduce((push, hook) => hook(push, h), pushTest)
 
     const runTestIn = runHooks.reduce((run, hook) => hook(run, h), runTestInCtx)
+
+    const addTest = (args, extra) => {
+      const deferred = Deferred()
+      deferred.args = args
+      _addTest(deferred)
+      Object.assign(deferred, extra)
+      return deferred.promise
+    }
 
     // h.defer.runner(t)
     //   => (spec => { /* run */ })
@@ -67,27 +77,26 @@ export default () => ({
     }
 
     const flush = () => {
-      reporting = true
+      running = true
       const runSpec = runTestIn(h)
-      for (const spec of tests) {
+      const currentTests = tests
+      tests = []
+      for (const spec of currentTests) {
         runSpec(spec)
       }
-      reporting = false
+      running = false
     }
 
     const deferTest = (args, tester = mainTest, extra) => {
-      if (locked) {
-        throw new Error('Cannot add test after reporting has started')
-      }
       // guard: is passthrough during reporting
-      if (reporting) {
+      if (running) {
         return tester(...args)
       }
-      const deferred = Deferred()
-      deferred.args = args
-      addTest(deferred)
-      Object.assign(deferred, extra)
-      return deferred.promise
+      // guard: can't add top level test during reporting
+      if (reporting) {
+        throw new Error('Cannot add test after reporting has started')
+      }
+      addTest(args, extra)
     }
 
     h.test = (...args) => deferTest(args)
@@ -96,10 +105,10 @@ export default () => ({
 
     const _report = h.report
     h.report = async (...args) => {
+      reporting = true
       flush()
-      locked = true
       const result = await _report.apply(h, args)
-      locked = false
+      reporting = false
       return result
     }
   },
