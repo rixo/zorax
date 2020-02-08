@@ -1,5 +1,5 @@
 import { test, describe } from '@@'
-import { spy, blackHole, arrayReporter } from '@@/util'
+import { spy, arrayReporter } from '@@/util'
 
 import { createHarness } from '@/lib/plug'
 import withSpy from '@/lib/spy'
@@ -53,10 +53,8 @@ describe('a spy', () => {
   const a = { name: 'a' }
   const b = { name: 'b' }
   const returns = [a, b]
-  const args0 = ['foo', 42, null]
-  const args1 = ['bar']
 
-  const zora_spec_fn = async (t, handler, pass) => {
+  const zora_spec_fn = async (t, handler, pass, expectedMessages) => {
     const z = createHarness([withSpy()])
     let i = 0
     const run = z.spy(() => returns[i++])
@@ -78,20 +76,19 @@ describe('a spy', () => {
     await z.report(reporter)
     // await z.report() // DEBUG DEBUG DEBUG restore blackHole
     t.eq(z.pass, pass, pass ? 'should pass' : 'should fail')
-    return messages
-  }
-
-  const pass = (t, handler) => zora_spec_fn(t, handler, true)
-
-  const isFailure = msg => msg.type === 'ASSERTION' && !msg.data.pass
-
-  const fail = async (t, handler, expectedMessages) => {
-    const messages = await zora_spec_fn(t, handler, false)
     if (expectedMessages) {
       const actual = messages.filter(isFailure).map(msg => msg.data.description)
       t.eq(actual, expectedMessages)
     }
   }
+
+  const pass = (t, handler, expectedMessages) =>
+    zora_spec_fn(t, handler, true, expectedMessages)
+
+  const isFailure = msg => msg.type === 'ASSERTION' && !msg.data.pass
+
+  const fail = async (t, handler, expectedMessages) =>
+    zora_spec_fn(t, handler, false, expectedMessages)
 
   const emptyRe = /^(?:.*=>\s*)?[{}\s]*$/
   const commentRe = /^\s*\/\//
@@ -110,7 +107,7 @@ describe('a spy', () => {
       : ['before', 'between', 'after']
           .map(hook => fn[hook] && `${hook}: ${parseFn(fn[hook])}`)
           .filter(Boolean)
-          .join(' => '))
+          .join(' ; '))
 
   describe('spy.calls', () => {
     test(pass, (spy, z) => {
