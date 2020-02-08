@@ -14,12 +14,16 @@ export default createHarnessFactory([
   withReporter(),
   withAuto({ auto: true }),
   withCatch(),
+
+  withMacro(),
+
   withDefer(),
   withGroup(),
   withOnly(),
-  withMacro(),
+
   withPass(),
   withTodo(),
+
   withAliases({
     group: 'describe',
     only: 'test.only',
