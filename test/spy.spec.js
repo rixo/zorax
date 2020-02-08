@@ -54,21 +54,21 @@ describe('a spy', () => {
   const b = { name: 'b' }
   const returns = [a, b]
 
-  const zora_spec_fn = async (t, handler, pass, expectedMessages) => {
+  const zora_spec_fn = async (t, run, pass, expectedMessages) => {
     const z = createHarness([withSpy()])
     let i = 0
-    const run = z.spy(() => returns[i++])
-    const args = [run, t]
-    if (typeof handler === 'function') {
-      run('foo', 42, null)
-      run('bar')
-      handler(...args)
+    const spy = z.spy(() => returns[i++])
+    const args = [spy, t]
+    if (typeof run === 'function') {
+      spy('foo', 42, null)
+      spy('bar')
+      run(...args)
     } else {
-      const { before, between, after } = handler
+      const { before, between, after } = run
       if (before) before(...args)
-      run('foo', 42, null)
+      spy('foo', 42, null)
       if (between) between(...args)
-      run('bar')
+      spy('bar')
       if (after) after(...args)
     }
     // await z.report(blackHole)
@@ -127,6 +127,12 @@ describe('a spy', () => {
   describe('spy.returns', () => {
     test(pass, (spy, z) => {
       z.eq(spy.returns, [a, b])
+    })
+  })
+
+  describe('spy.fn', () => {
+    test('is the spied function', pass, (spy, z) => {
+      z.eq(String(spy.fn), '() => returns[i++]')
     })
   })
 
