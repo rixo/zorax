@@ -1,6 +1,6 @@
-import { describe, plug } from 'zorax'
+import { describe, plug } from '@@'
 
-import { blackHole } from './util'
+import { blackHole, arrayReporter } from './util'
 
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
@@ -78,10 +78,10 @@ const { test } = plug(withIsFunction, withShouldRun)
 
 const createOnlyHarness = ({ only = true, group = true, macro = false } = {}) =>
   createHarness({ only }, [
+    macro && withMacro(),
     withDefer(),
     group && withGroup(),
     withOnly(),
-    macro && withMacro(),
   ])
 
 test('adds harness.only', t => {
@@ -105,7 +105,7 @@ describe('dependencies', () => {
   test('throws if zorax.group is after zorax.only.defer', t => {
     t.throws(() => {
       createHarness([withDefer(), withOnly(), withGroup()])
-    }, /zorax\.group/)
+    }, /zorax\.defer\.group/)
   })
 })
 
@@ -127,6 +127,157 @@ describe('`only` harness option', () => {
       z.only('bim', () => {})
     }, /only flag/)
   })
+})
+
+describe('compatibility with group', () => {
+  const formatMessage = ({ offset, data: { description, pass } }) => ({
+    offset,
+    description,
+    pass,
+  })
+
+  const macro = async (t, run, expected) => {
+    const z = await run()
+
+    const { reporter, messages } = arrayReporter()
+
+    await z.report(reporter)
+
+    t.ok(z.pass)
+
+    t.eq(messages.map(formatMessage), expected)
+  }
+
+  test(
+    'harness',
+    macro,
+    () => {
+      const z = createOnlyHarness({ group: true })
+
+      z.group('group', () => {
+        z.test('test', z => {
+          z.fail('should not run')
+        })
+        z.only('only', z => {
+          z.ok(true)
+        })
+      })
+
+      return z
+    },
+    [
+      { offset: 2, description: 'should be truthy', pass: true },
+      { offset: 1, description: 'only', pass: true },
+      { offset: 0, description: 'group', pass: true },
+    ]
+  )
+
+  test(
+    'proxy',
+    macro,
+    () => {
+      const z = createOnlyHarness({ group: true })
+
+      const zz = z.plug({
+        test(t) {
+          const { test } = t
+          t.test = (...args) => test(...args)
+        },
+      })
+
+      zz.group('group', () => {
+        zz.test('test', zz => {
+          zz.fail('should not run')
+        })
+        zz.only('only', zz => {
+          zz.ok(true)
+        })
+        zz.group('sub group', () => {
+          zz.test('sub group test', zz => {
+            zz.fail('should not run')
+          })
+          zz.only('sub group only', zz => {
+            zz.ok(true)
+          })
+        })
+      })
+
+      return z
+    },
+    [
+      { offset: 2, description: 'should be truthy', pass: true },
+      { offset: 1, description: 'only', pass: true },
+
+      { offset: 3, description: 'should be truthy', pass: true },
+      { offset: 2, description: 'sub group only', pass: true },
+      { offset: 1, description: 'sub group', pass: true },
+
+      { offset: 0, description: 'group', pass: true },
+    ]
+  )
+
+  test(
+    'compatibility with macro',
+    macro,
+    () => {
+      const z = createOnlyHarness({ group: true, macro: true })
+
+      const zz = z.plug({
+        test(t) {
+          const { test } = t
+          t.test = (...args) => test(...args)
+        },
+      })
+
+      const macro = async (t, actual, expected) => {
+        t.eq(actual, expected)
+      }
+
+      macro.title = (title = '', actual, expected) =>
+        `${title} ${actual} == ${expected}`.trim()
+
+      const shouldNotRun = zz => {
+        zz.fail('should not run')
+      }
+
+      zz.test('top level test before', shouldNotRun)
+
+      zz.group('group', () => {
+        zz.test('test before', shouldNotRun)
+
+        zz.only(macro, 42, 42)
+
+        zz.group('sub group with only', () => {
+          zz.test('sub group test', shouldNotRun)
+          zz.only('sub group only', zz => {
+            zz.ok(true, 'sub group only ok')
+          })
+        })
+
+        zz.group('emptied sub group', () => {
+          zz.test('skip test', shouldNotRun)
+        })
+      })
+
+      zz.test('top level test after', shouldNotRun)
+
+      zz.group('emptied group', () => {
+        zz.test('skip test', shouldNotRun)
+      })
+
+      return z
+    },
+    [
+      { offset: 2, description: 'should be equivalent', pass: true },
+      { offset: 1, description: '42 == 42', pass: true },
+
+      { offset: 3, description: 'sub group only ok', pass: true },
+      { offset: 2, description: 'sub group only', pass: true },
+      { offset: 1, description: 'sub group with only', pass: true },
+
+      { offset: 0, description: 'group', pass: true },
+    ]
+  )
 })
 
 describe("harness.test.only('', spec)", () => {
