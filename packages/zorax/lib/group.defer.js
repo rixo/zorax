@@ -1,4 +1,5 @@
-import { ZORAX_DEFER, ZORAX_GROUP as name, isFunction, hasName } from './_util'
+import { isFunction, hasName } from './_util'
+import { ZORAX_DEFER, ZORAX_GROUP as name } from './names'
 
 const enforceNoAsync = result => {
   if (result && isFunction(result.then) && isFunction(result.catch)) {

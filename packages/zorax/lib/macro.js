@@ -1,9 +1,10 @@
 /**
  * zorax/macro
  */
+import { ZORAX_MACRO as name } from './names.js'
 
 export default () => ({
-  name: 'zorax.macro',
+  name,
 
   test: t => {
     const { test } = t
