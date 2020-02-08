@@ -1,4 +1,4 @@
-import { test } from 'zorax'
+import { test } from '@@'
 
 import { arrayReporter, isFunction, spy } from './util'
 

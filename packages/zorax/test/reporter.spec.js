@@ -1,5 +1,5 @@
 import { mochaTapLike, tapeTapLike } from 'zora'
-import { test, describe } from 'zorax'
+import { test, describe } from '@@'
 import { spy } from './util'
 
 import { createHarness, createHarnessFactory } from '@/lib/plug'

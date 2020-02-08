@@ -1,4 +1,4 @@
-import { describe, test } from 'zorax'
+import { describe, test } from '@@'
 import { createHarness as createZoraHarness } from 'zora'
 
 import {

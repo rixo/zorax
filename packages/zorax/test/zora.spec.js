@@ -1,4 +1,4 @@
-import { test, describe } from 'zorax'
+import { test, describe } from '@@'
 import * as zora from 'zora'
 
 import { spy, blackHole } from './util'
