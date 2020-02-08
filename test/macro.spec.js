@@ -3,7 +3,9 @@ import { test, describe } from 'zorax'
 import { blackHole, isFunction, isHarness, isTestContext, spy } from './util'
 
 import { createHarness, createHarnessFactory } from '@/lib/plug'
+import withDefer from '@/lib/defer'
 import withMacro from '@/lib/macro'
+import withOnly from '@/lib/only.defer'
 
 describe(__filename)
 
@@ -24,6 +26,28 @@ const createTestSpy = ({ hook = 'harness' } = {}) => {
     test,
   }
 }
+
+describe('dependencies', () => {
+  describe('must be before zorax.defer.only', () => {
+    test('throws if zorax.defer.only is before', t => {
+      t.throws(() => {
+        createHarness([withDefer(), withOnly(), withMacro()])
+      }, /zorax\.defer\.only/)
+    })
+
+    test('does not throw if zorax.defer.only is after', t => {
+      t.doesNotThrow(() => {
+        createHarness([withDefer(), withMacro(), withOnly()])
+      })
+    })
+
+    test('does not throw if zorax.defer.only is absent', t => {
+      t.doesNotThrow(() => {
+        createHarness([withDefer(), withMacro()])
+      })
+    })
+  })
+})
 
 test('exports a function', t => {
   t.ok(typeof withMacro === 'function', 'withMacro is a function')
