@@ -1,6 +1,6 @@
 {
   "name": "@zorax/plug",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "description": "plugin mechanism for zora",
   "keywords": [
     "zora",
@@ -34,6 +34,6 @@
   },
   "devDependencies": {
     "zoar": "^0.0.1-0",
-    "zorax": "^0.0.2"
+    "zorax": "^0.0.3-alpha.0"
   }
 }
