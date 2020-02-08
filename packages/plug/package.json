@@ -1,0 +1,39 @@
+{
+  "name": "@zorax/plug",
+  "version": "0.0.0",
+  "description": "plugin mechanism for zora",
+  "keywords": [
+    "zora",
+    "zorax",
+    "plugin",
+    "plugins"
+  ],
+  "author": "rixo <rixo@rixo.fr>",
+  "license": "MIT",
+  "homepage": "https://github.com/rixo/zorax/blob/master/packages/plug",
+  "bugs": {
+    "url": "https://github.com/rixo/zorax/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rixo/zorax.git"
+  },
+  "main": "plug.cjs.js",
+  "module": "plug.js",
+  "files": [
+    "plug.js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "zora": "^3.1.8"
+  },
+  "devDependencies": {
+    "zoar": "^0.0.1-0",
+    "zorax": "^0.0.2"
+  }
+}
