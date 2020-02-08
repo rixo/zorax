@@ -4,8 +4,8 @@ import { blackHole, arrayReporter } from './util'
 
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
-import withOnly from '@/lib/only.defer'
-import withGroup from '@/lib/group.defer'
+import withOnly from '@/lib/defer.only'
+import withGroup from '@/lib/defer.group'
 import withMacro from '@/lib/macro'
 
 const withIsFunction = {
@@ -96,13 +96,13 @@ describe('dependencies', () => {
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.defer is after zorax.only.defer', t => {
+  test('throws if zorax.defer is after zorax.defer.only', t => {
     t.throws(() => {
       createHarness([withOnly(), withDefer()])
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.group is after zorax.only.defer', t => {
+  test('throws if zorax.group is after zorax.defer.only', t => {
     t.throws(() => {
       createHarness([withDefer(), withOnly(), withGroup()])
     }, /zorax\.defer\.group/)

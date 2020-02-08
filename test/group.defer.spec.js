@@ -4,7 +4,7 @@ import { arrayReporter } from './util'
 
 import { createHarness } from '@/lib/plug'
 import withDefer from '@/lib/defer'
-import withGroup from '@/lib/group.defer'
+import withGroup from '@/lib/defer.group'
 
 describe(__filename)
 
@@ -26,7 +26,7 @@ describe('requires zorax.defer', () => {
     }, /zorax\.defer/)
   })
 
-  test('throws if zorax.defer is after zorax.group.defer', t => {
+  test('throws if zorax.defer is after zorax.defer.group', t => {
     t.throws(() => {
       createHarness([withGroup(), withDefer()])
     }, /zorax\.defer/)
