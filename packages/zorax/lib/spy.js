@@ -34,6 +34,9 @@ const createSpyFactory = t => (fn = noop) => {
     return result
   }
 
+  // useful for debug
+  spied.fn = fn
+
   Object.assign(spied, { calls, args: _args, returns })
 
   const beenCalledWith = (args, api = passed) => {
