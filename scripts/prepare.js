@@ -9,10 +9,11 @@ const rimraf = () =>
     // dryRun: true,
   })
 
-const changePrivateFalse = contents => {
+const transformPkg = contents => {
   const pkg = JSON.parse(contents)
   pkg.private = false
   delete pkg.files
+  delete pkg.scripts
   return JSON.stringify(pkg, null, 2)
 }
 
@@ -33,7 +34,7 @@ const run = async () => {
   await rimraf()
   await Promise.all([
     copy('README.md'),
-    copy('package.json', prod && changePrivateFalse),
+    copy('package.json', prod && transformPkg),
   ])
 }
 
