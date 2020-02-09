@@ -1,8 +1,8 @@
 import { test, describe } from '@@'
 import { spy, arrayReporter } from '@@/util'
 
-import { createHarness } from '@/lib/plug'
-import withSpy from '@/lib/spy'
+import { createHarness } from '@/plug'
+import withSpy from '@/spy'
 
 describe('withSpy', () => {
   test('is a function', t => {

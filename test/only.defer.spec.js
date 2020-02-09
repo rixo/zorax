@@ -1,12 +1,12 @@
 import { describe, plug } from '@@'
 
-import { blackHole, arrayReporter } from './util'
+import { blackHole, arrayReporter } from '@@/util'
 
-import { createHarness } from '@/lib/plug'
-import withDefer from '@/lib/defer'
-import withOnly from '@/lib/defer.only'
-import withGroup from '@/lib/defer.group'
-import withMacro from '@/lib/macro'
+import { createHarness } from '@/plug'
+import withDefer from '@/defer'
+import withOnly from '@/defer.only'
+import withGroup from '@/defer.group'
+import withMacro from '@/macro'
 
 const withIsFunction = {
   test: t => {

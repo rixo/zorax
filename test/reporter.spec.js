@@ -1,9 +1,9 @@
 import { mochaTapLike, tapeTapLike } from 'zora'
 import { test, describe } from '@@'
-import { spy } from './util'
+import { spy } from '@@/util'
 
-import { createHarness, createHarnessFactory } from '@/lib/plug'
-import withDefaultReporter from '@/lib/reporter'
+import { createHarness, createHarnessFactory } from '@/plug'
+import withDefaultReporter from '@/reporter'
 
 const spyReporter = () => {
   const messages = []

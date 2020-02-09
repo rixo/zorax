@@ -1,10 +1,10 @@
 import { createHarness as createZoraHarness } from 'zora'
 import { describe, test } from '@@'
 
-import { spy } from './util'
+import { spy } from '@@/util'
 
-import { createHarness, createHarnessFactory } from '@/lib/plug'
-import withAuto from '@/lib/auto'
+import { createHarness, createHarnessFactory } from '@/plug'
+import withAuto from '@/auto'
 
 describe(__filename)
 

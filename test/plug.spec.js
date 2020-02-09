@@ -1,6 +1,4 @@
 import { describe, test } from '@@'
-import { createHarness as createZoraHarness } from 'zora'
-
 import {
   blackHole as bh,
   isFunction,
@@ -8,9 +6,10 @@ import {
   isHarnessFactory,
   isTestContext,
   spy,
-} from './util'
+} from '@@/util'
+import { createHarness as createZoraHarness } from 'zora'
 
-import { createHarnessFactory, createHarness } from 'zorax/lib/plug'
+import { createHarnessFactory, createHarness } from '@/plug'
 
 const noop = () => {}
 

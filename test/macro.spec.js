@@ -1,11 +1,11 @@
 import { test, describe } from '@@'
 
-import { blackHole, isFunction, isHarness, isTestContext, spy } from './util'
+import { blackHole, isFunction, isHarness, isTestContext, spy } from '@@/util'
 
-import { createHarness, createHarnessFactory } from '@/lib/plug'
-import withDefer from '@/lib/defer'
-import withMacro from '@/lib/macro'
-import withOnly from '@/lib/defer.only'
+import { createHarness, createHarnessFactory } from '@/plug'
+import withDefer from '@/defer'
+import withMacro from '@/macro'
+import withOnly from '@/defer.only'
 
 describe(__filename)
 

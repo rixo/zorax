@@ -1,4 +1,4 @@
-# `@zorax/macro`
+# `zorax/macro`
 
 ~~~js
 t.test(desc, spec)

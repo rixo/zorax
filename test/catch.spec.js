@@ -1,9 +1,9 @@
 import { test } from '@@'
 
-import { arrayReporter, isFunction, spy } from './util'
+import { arrayReporter, isFunction, spy } from '@@/util'
 
-import { createHarness } from '@/lib/plug'
-import withCatch from '@/lib/catch'
+import { createHarness } from '@/plug'
+import withCatch from '@/catch'
 
 test('withCatch', t => {
   t.test('is a function', t => {

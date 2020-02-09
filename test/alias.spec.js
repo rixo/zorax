@@ -1,9 +1,8 @@
 import { test } from '@@'
+import { isHarness } from '@@/util'
 
-import { createHarness } from '@/lib/plug'
-import withAlias from '@/lib/alias'
-
-import { isHarness } from './util'
+import { createHarness } from '@/plug'
+import withAlias from '@/alias'
 
 test('does not break createHarness', t => {
   const z = createHarness([withAlias({})])

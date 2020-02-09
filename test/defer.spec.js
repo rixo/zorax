@@ -1,9 +1,9 @@
 import { describe, test } from '@@'
 
-import { createHarness } from '@/lib/plug'
-import withDefer from '@/lib/defer'
+import { createHarness } from '@/plug'
+import withDefer from '@/defer'
 
-import { arrayReporter, blackHole as bh, isHarness, spy } from './util'
+import { arrayReporter, blackHole as bh, isHarness, spy } from '@@/util'
 
 describe(__filename)
 

@@ -1,10 +1,10 @@
 import { describe, test } from '@@'
 
-import { arrayReporter } from './util'
+import { arrayReporter } from '@@/util'
 
-import { createHarness } from '@/lib/plug'
-import withDefer from '@/lib/defer'
-import withGroup from '@/lib/defer.group'
+import { createHarness } from '@/plug'
+import withDefer from '@/defer'
+import withGroup from '@/defer.group'
 
 describe(__filename)
 

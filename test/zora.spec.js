@@ -1,7 +1,7 @@
 import { test, describe } from '@@'
 import * as zora from 'zora'
 
-import { spy, blackHole } from './util'
+import { spy, blackHole } from '@@/util'
 
 describe(__filename)
 
