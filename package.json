@@ -41,6 +41,6 @@
     "prepare": "node scripts/prepare.js",
     "build": "cross-env PUBLISH=1 npm run prepare && rollup -c",
     "dev": "npm run prepare && rollup -c -w",
-    "test": "yarn zoar"
+    "test": "yarn build && yarn zoar"
   }
 }
