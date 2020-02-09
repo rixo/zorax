@@ -1559,9 +1559,9 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-zoar@^0.0.1-0:
-  version "0.0.1-0"
-  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.0.1-0.tgz#c972402873a386f6f200d545caf893350d81236a"
+zoar@^0.0.1-1:
+  version "0.0.1-1"
+  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.0.1-1.tgz#573f3d2951cbc08f231f84e001edc2de29aa84fc"
   dependencies:
     arg "^4.1.2"
     cheap-watch "^1.0.2"
@@ -1588,8 +1588,8 @@ zora@^3.0.0:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
 
-zorax@^0.0.3-alpha.0:
-  version "0.0.3-alpha.0"
-  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.3-alpha.0.tgz#b119ab0d362c1f94c3f9736f6c9f14b92e34473c"
+zorax@^0.0.3-0:
+  version "0.0.3-0"
+  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.3-0.tgz#ca65f48c638e6842a6e6dd52e485a768946eeefe"
   dependencies:
     zora "^3.0.0"
