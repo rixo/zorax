@@ -2,19 +2,19 @@ const del = require('del')
 const fs = require('fs').promises
 const path = require('path')
 
-const prod = !!process.env.PUBLISH
+// const prod = !!process.env.PUBLISH
 
 const rimraf = () =>
   del('dist/*', {
     // dryRun: true,
   })
 
-const changePrivateFalse = contents => {
-  const pkg = JSON.parse(contents)
-  pkg.private = false
-  delete pkg.files
-  return JSON.stringify(pkg, null, 2)
-}
+// const changePrivateFalse = contents => {
+//   const pkg = JSON.parse(contents)
+//   pkg.private = false
+//   delete pkg.files
+//   return JSON.stringify(pkg, null, 2)
+// }
 
 const dist = filename => path.resolve(__dirname, '..', 'dist', filename)
 
@@ -33,7 +33,8 @@ const run = async () => {
   await rimraf()
   await Promise.all([
     copy('README.md'),
-    copy('package.json', prod && changePrivateFalse),
+    copy('yarn.lock'),
+    fs.symlink('../package.json', 'dist/package.json'),
   ])
 }
 
