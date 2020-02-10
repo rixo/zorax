@@ -35,6 +35,8 @@ const run = async () => {
     copy('README.md'),
     copy('yarn.lock'),
     fs.symlink('../package.json', 'dist/package.json'),
+    fs.symlink('../node_modules', 'dist/node_modules'),
+    fs.symlink('../test', 'dist/test'),
   ])
 }
 
