@@ -36,10 +36,10 @@
     "zorax": "^0.0.3-0"
   },
   "scripts": {
-    "clean": "rm -f dist/*",
+    "clean": "rm -rf dist/*",
     "prepare": "node scripts/prepare.js",
     "build": "cross-env PUBLISH=1 npm run prepare && rollup -c",
     "dev": "npm run prepare && rollup -c -w",
-    "test": "yarn build && yarn zoar"
+    "test": "yarn zoar"
   }
 }
