@@ -37,9 +37,10 @@
   },
   "scripts": {
     "clean": "rm -rf dist/*",
-    "dist": "node scripts/prepare.js",
-    "build": "cross-env PUBLISH=1 npm run dist && rollup -c",
-    "dev": "npm run dist && rollup -c -w",
+    "prepare": "node scripts/prepare.js",
+    "build": "cross-env PUBLISH=1 npm run prepare && rollup -c",
+    "dev": "npm run prepare && rollup -c -w",
+    "pub": "yarn clean && yarn build && cd dist && yarn test && np --no-tests --no-release-draft",
     "test": "yarn zoar"
   }
 }
