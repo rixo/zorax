@@ -13,13 +13,22 @@ import { createHarnessFactory, createHarness } from '@/plug'
 
 const noop = () => {}
 
-const spyPlug = ({ test, harness, decorate, decorateHarness } = {}) => ({
-  test: test !== false ? spy(test) : undefined,
-  // harness: harness !== false ? spy(harness) : undefined,
-  harness: harness && spy(harness === true ? spy() : harness),
-  decorate: decorate && spy(decorate === true ? spy() : decorate),
+const spyPlug = ({
+  test,
+  harness,
+  init,
+  decorate,
+  decorateHarness,
+  decorateInit,
+} = {}) => ({
+  test: test === false ? undefined : spy(test === true ? noop : test),
+  harness: harness && spy(harness === true ? noop : harness),
+  init: init && spy(init === true ? noop : init),
+  decorate: decorate && spy(decorate === true ? noop : decorate),
   decorateHarness:
-    decorateHarness && spy(decorateHarness === true ? spy() : decorateHarness),
+    decorateHarness && spy(decorateHarness === true ? noop : decorateHarness),
+  decorateInit:
+    decorateInit && spy(decorateInit === true ? noop : decorateInit),
 })
 
 spyPlug.reset = (...plugins) => {
@@ -32,19 +41,6 @@ spyPlug.reset = (...plugins) => {
       })
   }
 }
-
-const spies = () =>
-  new Proxy(
-    {},
-    {
-      get(target, prop) {
-        if (!target.hasOwnProperty(prop)) {
-          target[prop] = (...args) => (target[prop] = spy(...args))
-        }
-        return target[prop]
-      },
-    }
-  )
 
 const filtersOutFalsy = (t, init) => {
   const foo = {}
@@ -205,17 +201,13 @@ test('harness.plugins: attaches plugins to the harness', t => {
   t.eq(z.plugins, plugins, 'harness.plugins eq plugins')
 })
 
-test('t.plugins: attaches plugins to wrapped contexts', t => {
-  const plugins = [{}, {}, {}]
-  const z = createHarness()
-  let zt
-  z.test('', z => {
-    z.plug(...plugins).test('', z => {
-      zt = z
-    })
-  })
-  t.eq(z.plugins, [])
-  t.eq(zt && zt.plugins, plugins)
+test('t.plugins: attaches plugins to plug proxy', t => {
+  const plugins = [{ name: 'a' }, { name: 'b' }]
+  const z = createHarness(plugins)
+  const plugins2 = [{ name: 'c' }]
+  const zz = z.plug(...plugins2)
+  t.eq(z.plugins, plugins)
+  t.eq(zz.plugins, [...plugins, ...plugins2])
 })
 
 describe('harness.report(...)', () => {
@@ -333,20 +325,16 @@ describe('plug', () => {
     t.ok(isFunction(z.plug))
   })
 
-  test('is exposed on test contexts', t => {
+  test('is exposed on proxies', t => {
     const z = createHarness()
-    let hasRun = false
-    z.test('', z => {
-      t.ok(isFunction(z.plug))
-      hasRun = true
-    })
-    t.ok(hasRun)
+    const zz = z.plug()
+    t.ok(isFunction(zz.plug))
   })
 
   test('throws when adding harness plugin in test context', t => {
     const z = createHarness()
-    t.throws(() => z.plug({ harness: noop }), /harness plugin/)
-    t.throws(() => z.plug({ decorateHarness: noop }), /harness plugin/)
+    t.throws(() => z.plug({ init: noop }), /\binit plugin\b/i)
+    t.throws(() => z.plug({ decorateInit: noop }), /\binit plugin\b/i)
   })
 })
 
@@ -358,7 +346,7 @@ describe('harness.plug(plugin)', () => {
     let done = false
     createHarness()
       .plug(...plugins)
-      .test('', z => {
+      .run(z => {
         t.ok(isTestContext(z))
         t.eq(z.plugins, [foo, bar])
         done = true
@@ -366,130 +354,121 @@ describe('harness.plug(plugin)', () => {
     t.ok(done)
   })
 
-  test('wrapped contexts have a plug method', t => {
-    const plugin = {}
-    const run = spies()
-
+  test('returns a proxy with a plug method', t => {
+    const plugin = { name: 'foo' }
     const z = createHarness().plug(plugin)
+    t.ok(isFunction(z.plug), 'harness.plug().plug is a function')
 
-    t.ok(isFunction(z.plug), 'harness.plug is a function')
-
-    z.test(
-      'main',
-      run.main(z => {
-        t.ok(isFunction(z.plug), "main test's t.plug is a function")
-
-        z.test(
-          'sub',
-          run.sub(z => {
-            t.ok(isFunction(z.plug), "sub test's t.plug is a function")
-
-            z.test(
-              'sub sub',
-              run.subsub(z => {
-                t.ok(isFunction(z.plug), "sub sub test's t.plug is a function")
-              })
-            )
-          })
-        )
-      })
-    )
-
-    t.eq(run.main.callCount, 1, 'main test runs')
-    t.eq(run.sub.callCount, 1, 'sub test runs')
-    t.eq(run.subsub.callCount, 1, 'sub sub test runs')
+    t.test('that returns a proxy with a plug method', t => {
+      const plugin = { name: 'bar' }
+      const zz = z.plug(plugin)
+      t.ok(isFunction(zz.plug), 'harness.plug().plug().plug is a function')
+    })
   })
 })
 
-test('child contexts are passed their own proxy', t => {
-  const p = Array.from({ length: 10 }).map((_, i) => ({ name: 'plugin ' + i }))
-  const z = createHarness([p[0], p[1]])
-  const s = spies()
-
-  t.eq(z.plugins, p.slice(0, 2))
-
-  z.test(
-    'main',
-    s.main(z => {
-      t.eq(z.plugins, p.slice(0, 2))
-
-      z.plug(p[2], p[3]).test(
-        'sub',
-        s.sub(z => {
-          t.eq(z.plugins, p.slice(0, 4))
-
-          z.plug(p[4], p[5]).test(
-            'sub sub',
-            s.subsub(z => {
-              t.eq(z.plugins, p.slice(0, 6))
-            })
-          )
-        })
-      )
-    })
-  )
-
-  t.eq(s.main.callCount, 1, 'main test runs')
-  t.eq(s.sub.callCount, 1, 'sub test runs')
-  t.eq(s.subsub.callCount, 1, 'sub sub test runs')
-})
-
-describe('hook order', () => {
-  // -> pg1.test -> pg1.harness
-  // -> pg2.test -> pg2.harness
-  // -> pg1.decorate -> pg1.decorateHarness
-  // -> pg2.decorate -> pg2.decorateHarness
+describe('hooks order', () => {
+  // -> pg1.test -> pg1.harness -> pg1.init
+  // -> pg2.test -> pg2.harness -> pg2.init
+  // -> pg1.decorate -> pg1.decorateHarness -> pg1.decorateInit
+  // -> pg2.decorate -> pg2.decorateHarness -> pg2.decorateInit
 
   const hooksOrder = harness => async (t, createTestHarness) => {
     const pg1 = spyPlug({
       test() {
         harness && t.eq(pg1.harness.callCount, 0)
+        harness && t.eq(pg1.init.callCount, 0)
         t.eq(pg2.test.callCount, 0)
         harness && t.eq(pg2.harness.callCount, 0)
+        harness && t.eq(pg2.init.callCount, 0)
         t.eq(pg1.decorate.callCount, 0)
         harness && t.eq(pg1.decorateHarness.callCount, 0)
+        harness && t.eq(pg1.decorateInit.callCount, 0)
         t.eq(pg2.decorate.callCount, 0)
         harness && t.eq(pg2.decorateHarness.callCount, 0)
+        harness && t.eq(pg2.decorateInit.callCount, 0)
       },
       decorate() {
         harness && t.eq(pg1.decorateHarness.callCount, 0)
+        harness && t.eq(pg1.decorateInit.callCount, 0)
         t.eq(pg2.decorate.callCount, 0)
         harness && t.eq(pg2.decorateHarness.callCount, 0)
+        harness && t.eq(pg2.decorateInit.callCount, 0)
       },
       ...(harness && {
         harness() {
+          t.eq(pg1.init.callCount, 0)
           t.eq(pg2.test.callCount, 0)
           t.eq(pg2.harness.callCount, 0)
+          t.eq(pg2.init.callCount, 0)
           t.eq(pg1.decorate.callCount, 0)
           t.eq(pg1.decorateHarness.callCount, 0)
+          t.eq(pg1.decorateInit.callCount, 0)
           t.eq(pg2.decorate.callCount, 0)
           t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
+        },
+        init() {
+          t.eq(pg2.test.callCount, 0)
+          t.eq(pg2.harness.callCount, 0)
+          t.eq(pg2.init.callCount, 0)
+          t.eq(pg1.decorate.callCount, 0)
+          t.eq(pg1.decorateHarness.callCount, 0)
+          t.eq(pg1.decorateInit.callCount, 0)
+          t.eq(pg2.decorate.callCount, 0)
+          t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
         },
         decorateHarness() {
+          t.eq(pg1.decorateInit.callCount, 0)
           t.eq(pg2.decorate.callCount, 0)
           t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
+        },
+        decorateInit() {
+          t.eq(pg2.decorate.callCount, 0)
+          t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
         },
       }),
     })
     const pg2 = spyPlug({
       test() {
         harness && t.eq(pg2.harness.callCount, 0)
+        harness && t.eq(pg2.init.callCount, 0)
         t.eq(pg1.decorate.callCount, 0)
         harness && t.eq(pg1.decorateHarness.callCount, 0)
+        harness && t.eq(pg1.decorateInit.callCount, 0)
         t.eq(pg2.decorate.callCount, 0)
         harness && t.eq(pg2.decorateHarness.callCount, 0)
+        harness && t.eq(pg2.decorateInit.callCount, 0)
       },
       decorate() {
         harness && t.eq(pg2.decorateHarness.callCount, 0)
+        harness && t.eq(pg2.decorateInit.callCount, 0)
       },
       ...(harness && {
         harness() {
+          t.eq(pg2.init.callCount, 0)
           t.eq(pg1.decorate.callCount, 0)
-          harness && t.eq(pg1.decorateHarness.callCount, 0)
+          t.eq(pg1.decorateHarness.callCount, 0)
+          t.eq(pg1.decorateInit.callCount, 0)
           t.eq(pg2.decorate.callCount, 0)
-          harness && t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
         },
-        decorateHarness() {},
+        init() {
+          t.eq(pg1.decorate.callCount, 0)
+          t.eq(pg1.decorateHarness.callCount, 0)
+          t.eq(pg1.decorateInit.callCount, 0)
+          t.eq(pg2.decorate.callCount, 0)
+          t.eq(pg2.decorateHarness.callCount, 0)
+          t.eq(pg2.decorateInit.callCount, 0)
+        },
+        decorateHarness() {
+          t.eq(pg2.decorateInit.callCount, 0)
+        },
+        decorateInit() {},
       }),
     })
 
@@ -504,9 +483,13 @@ describe('hook order', () => {
 
     if (harness) {
       t.eq(pg1.harness.callCount, 1, `pg1.harness, 1`)
+      t.eq(pg1.init.callCount, 1, `pg1.init, 1`)
       t.eq(pg1.decorateHarness.callCount, 1, `pg1.decorateHarness, 1`)
+      t.eq(pg1.decorateInit.callCount, 1, `pg1.decorateInit, 1`)
       t.eq(pg2.harness.callCount, 1, `pg2.harness, 1`)
+      t.eq(pg2.init.callCount, 1, `pg2.init, 1`)
       t.eq(pg2.decorateHarness.callCount, 1, `pg2.decorateHarness, 1`)
+      t.eq(pg2.decorateInit.callCount, 1, `pg2.decorateInit, 1`)
     }
   }
 
@@ -533,20 +516,10 @@ describe('hook order', () => {
       }),
     1
   )
-
-  test('t.plug(pg1, pg2)', testHooksOrder, (...plugins) =>
-    createHarness().run(z => {
-      z.test('', t => {
-        const zz = t.plug(...plugins)
-        spyPlug.reset(plugins)
-        zz.test('', noop)
-      })
-    })
-  )
 })
 
-describe('harness plugin hooks', () => {
-  test('are passed (harness, harness)', t => {
+describe('hooks arguments', () => {
+  test('harness plugin hooks are passed (harness, harness)', t => {
     const plugin = spyPlug({
       decorate: true,
       harness: true,
@@ -557,28 +530,48 @@ describe('harness plugin hooks', () => {
     t.eq(plugin.harness.callCount, 1)
     t.eq(plugin.decorate.callCount, 1)
     t.eq(plugin.decorateHarness.callCount, 1)
+    z.id = Symbol('z')
     t.eq(plugin.test.calls[0], [z, z])
     t.eq(plugin.harness.calls[0], [z, z])
     t.eq(plugin.decorate.calls[0], [z, z])
     t.eq(plugin.decorateHarness.calls[0], [z, z])
   })
-})
 
-describe('test plugin hooks', () => {
-  test('are passed (t, harness)', t => {
-    const plugin = spyPlug({ decorate: true })
+  test('proxy plugin hooks are passed (proxy, harness)', t => {
+    const plugin = spyPlug({
+      decorate: true,
+      harness: true,
+      decorateHarness: true,
+    })
+    const z = createHarness([plugin])
+    t.eq(plugin.test.callCount, 1)
+    t.eq(plugin.harness.callCount, 1)
+    t.eq(plugin.decorate.callCount, 1)
+    t.eq(plugin.decorateHarness.callCount, 1)
+    z.id = Symbol('z')
+    t.eq(plugin.test.calls[0], [z, z])
+    t.eq(plugin.harness.calls[0], [z, z])
+    t.eq(plugin.decorate.calls[0], [z, z])
+    t.eq(plugin.decorateHarness.calls[0], [z, z])
+  })
+
+  test('test plugin hooks are passed (t, proxy, harness)', t => {
+    const plugin = spyPlug({ test: true, decorate: true })
     const z = createHarness()
+    const zz = z.plug(plugin)
     let complete = false
-    z.test('', zt => {
-      const zz = zt.plug(plugin)
+    zz.test('', zt => {
       spyPlug.reset(plugin)
       t.eq(plugin.test.callCount, 0)
       t.eq(plugin.decorate.callCount, 0)
-      zz.test('', ztt => {
+      zt.test('', ztt => {
         t.eq(plugin.test.callCount, 1)
         t.eq(plugin.decorate.callCount, 1)
-        t.eq(plugin.test.calls[0], [ztt, z])
-        t.eq(plugin.decorate.calls[0], [ztt, z])
+        ztt.id = 'ctx'
+        zz.id = 'proxy'
+        z.id = 'harness'
+        t.eq(plugin.test.calls[0], [ztt, zz, z])
+        t.eq(plugin.decorate.calls[0], [ztt, zz, z])
         complete = true
       })
     })
@@ -586,7 +579,7 @@ describe('test plugin hooks', () => {
   })
 })
 
-test('decorate hook does not overwrite test', t => {
+test('decorate hooks do not overwrite test method', t => {
   t.test('in harness', t => {
     const foo = { id: 'foo' }
     const plugin = {
