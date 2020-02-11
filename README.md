@@ -78,15 +78,7 @@ Or further customize it for local (module) tests:
 ~~~js
 import { plug } from '@@'
 
-const { test, describe } = plug()
+const localPlugins = [...]
 
-### Auto
-
-~~~js
-import { createHarness } from 'zorax/lib/plug'
-import withAuto from 'zorax/lib/auto'
-
-const harness = createHarness([withAuto()], { auto: true })
-
-harness.auto()
+const { test, describe } = plug(localPlugins)
 ~~~
