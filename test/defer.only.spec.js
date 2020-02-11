@@ -19,13 +19,17 @@ const withShouldRun = {
   test: t => {
     const map = {}
 
-    t.shouldRun = (name, spec) => {
+    let expectedRuns = 0
+    let actualRuns = 0
+
+    const shouldRun = (name, spec) => {
       if (map.hasOwnProperty(name)) {
         throw new Error('Duplicated name: ' + name)
       }
       map[name] = 0
       const macro = (...args) => {
         map[name]++
+        actualRuns++
         if (spec) {
           return spec(...args)
         }
@@ -33,6 +37,13 @@ const withShouldRun = {
       macro.title = name
       return macro
     }
+
+    Object.defineProperty(t, 'shouldRun', {
+      get() {
+        expectedRuns++
+        return shouldRun
+      },
+    })
 
     const notMap = {}
 
@@ -50,6 +61,14 @@ const withShouldRun = {
     }
 
     t.flush = () => {
+      t.collect({
+        pass: actualRuns === expectedRuns,
+        actual: actualRuns,
+        expected: expectedRuns,
+        description: `expects ${expectedRuns} runs`,
+        operator: 'equal',
+      })
+
       Object.entries(map).forEach(([name, calls]) => {
         t.collect({
           pass: calls === 1,
@@ -59,6 +78,7 @@ const withShouldRun = {
           operator: 'equal',
         })
       })
+
       Object.entries(notMap).forEach(([name, calls]) => {
         t.collect({
           pass: calls === 0,
@@ -127,6 +147,38 @@ describe('`only` harness option', () => {
       z.only('bim', () => {})
     }, /only flag/)
   })
+})
+
+test('throws if only is called out of sync', async t => {
+  const z = createOnlyHarness()
+  let complete = false
+
+  z.test('main', () => {
+    t.throws(() => {
+      complete = true
+      z.only('throws', () => {})
+    }, /\bsynchronously\b/)
+  })
+
+  await z.report(blackHole)
+
+  t.ok(complete, 'test completed')
+})
+
+test('throws if only is called on sub test', async t => {
+  const z = createOnlyHarness()
+  let complete = false
+
+  z.test('main', z => {
+    t.throws(() => {
+      complete = true
+      z.only('throws', () => {})
+    }, /\broot tests\b/)
+  })
+
+  await z.report(blackHole)
+
+  t.ok(complete, 'test completed')
 })
 
 describe('compatibility with group', () => {
@@ -276,6 +328,129 @@ describe('compatibility with group', () => {
       { offset: 1, description: 'sub group with only', pass: true },
 
       { offset: 0, description: 'group', pass: true },
+    ]
+  )
+})
+
+describe('group.only / skip', () => {
+  const formatMessage = ({ offset, data: { description, pass, skip } }) => ({
+    offset,
+    description,
+    pass,
+    skip,
+  })
+
+  const macro = async (t, run, expected) => {
+    const z = createOnlyHarness({ group: true, macro: true })
+
+    await run(z, t)
+
+    const { reporter, messages } = arrayReporter()
+
+    await z.report(reporter)
+
+    t.ok(z.pass)
+
+    if (expected) {
+      t.eq(
+        messages.map(formatMessage),
+        expected.map(x => ({ pass: true, skip: false, ...x }))
+      )
+    }
+  }
+
+  test(
+    'group.only',
+    macro,
+    (z, t) => {
+      z.test(t.shouldNotRun('top level before'))
+
+      z.group.only('group.only', () => {
+        z.test(t.shouldRun('group.only > test 1'))
+        z.test(t.shouldRun('group.only > test 2'))
+        z.skip(t.shouldNotRun('group.only > skip'))
+        z.group('group.only > group', () => {
+          z.test(t.shouldRun('group.only > group > test 1'))
+          z.test(t.shouldRun('group.only > group > test 2'))
+          z.skip(t.shouldNotRun('group.only > group > skip'))
+        })
+      })
+
+      z.group('other group', () => {
+        z.test(t.shouldNotRun('other group > test'))
+      })
+
+      z.only(t.shouldRun('only test'))
+    },
+    [
+      { offset: 1, description: 'group.only > test 1' },
+      { offset: 1, description: 'group.only > test 2' },
+      { offset: 1, description: 'group.only > skip', skip: true },
+      { offset: 2, description: 'group.only > group > test 1' },
+      { offset: 2, description: 'group.only > group > test 2' },
+      { offset: 2, description: 'group.only > group > skip', skip: true },
+      { offset: 1, description: 'group.only > group' },
+      { offset: 0, description: 'group.only' },
+      { offset: 0, description: 'only test' },
+    ]
+  )
+
+  test(
+    'group.skip',
+    macro,
+    (z, t) => {
+      z.test(t.shouldRun('top level before'))
+
+      z.group.skip('group.only', () => {
+        z.test(t.shouldNotRun('group.only > test 1'))
+        z.test(
+          t.shouldNotRun('group.only > test 2', z => {
+            z.fail('not here')
+          })
+        )
+        z.skip(t.shouldNotRun('group.only > skip'))
+        z.group('group.only > group', () => {
+          z.test(t.shouldNotRun('group.only > group > test 1'))
+          z.test(t.shouldNotRun('group.only > group > test 2'))
+          z.skip(t.shouldNotRun('group.only > group > skip'))
+        })
+      })
+
+      z.group('other group', () => {
+        z.test(t.shouldRun('other group > test'))
+        z.group.skip('other group > group.skip', () => {
+          z.test(t.shouldNotRun('other group > group.skip > test'))
+          z.only(t.shouldNotRun('other group > group.skip > only'))
+        })
+      })
+
+      z.test(t.shouldRun('test after'))
+    },
+    [
+      { offset: 0, description: 'top level before' },
+      { offset: 0, description: 'group.only', skip: true },
+      { offset: 1, description: 'other group > test' },
+      { offset: 1, description: 'other group > group.skip', skip: true },
+      { offset: 0, description: 'other group' },
+      { offset: 0, description: 'test after' },
+    ]
+  )
+
+  test(
+    'group.skip > only',
+    macro,
+    (z, t) => {
+      z.group.skip('group.skip', () => {
+        z.only(t.shouldNotRun('group.skip > only'))
+        z.test(t.shouldNotRun('group.skip > test'))
+      })
+      z.test(t.shouldRun('passing test'))
+      z.test(t.shouldRun('failing test'))
+    },
+    [
+      { offset: 0, description: 'group.skip', skip: true },
+      { offset: 0, description: 'passing test' },
+      { offset: 0, description: 'failing test' },
     ]
   )
 })
