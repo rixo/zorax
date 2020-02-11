@@ -5,8 +5,7 @@
   "keywords": [
     "zora",
     "plugin",
-    "plugins",
-    "hook"
+    "plugins"
   ],
   "author": "rixo <rixo@rixo.fr>",
   "license": "MIT",
@@ -18,8 +17,12 @@
     "type": "git",
     "url": "git@github.com:rixo/zorax.git"
   },
-  "main": "zorax.js",
-  "module": "zorax.mjs",
+  "main": "dist/zorax.js",
+  "module": "lib/zorax.js",
+  "files": [
+    "dist",
+    "lib"
+  ],
   "dependencies": {
     "zora": "^3.0.0"
   },
@@ -37,10 +40,8 @@
   },
   "scripts": {
     "clean": "rm -rf dist/*",
-    "dist": "node scripts/prepare.js",
-    "build": "cross-env PUBLISH=1 npm run dist && rollup -c",
-    "dev": "npm run dist && rollup -c -w",
-    "pub": "yarn clean && yarn build && cd dist && yarn test && np --no-tests --no-release-draft",
+    "build": "yarn clean && rollup -c",
+    "dev": "rollup -c -w",
     "test": "yarn zoar"
   }
 }
