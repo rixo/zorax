@@ -42,8 +42,8 @@ export const { test, describe, plug } = plug({
 
 ~~~js
 // test/index.js
-import { createHarness } from 'zorax/plug'
-import auto from 'zorax/auto'
+import { createHarness } from 'zorax/lib/plug'
+import auto from 'zorax/lib/auto'
 
 // it's the default zorax harness, so it already has auto, defer, etc.
 export const { test, describe, plug } = createHarness(
@@ -83,8 +83,8 @@ const { test, describe } = plug()
 ### Auto
 
 ~~~js
-import { createHarness } from 'zorax/plug'
-import withAuto from 'zorax/auto'
+import { createHarness } from 'zorax/lib/plug'
+import withAuto from 'zorax/lib/auto'
 
 const harness = createHarness([withAuto()], { auto: true })
 

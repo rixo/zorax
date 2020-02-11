@@ -1,11 +1,11 @@
-# `@zorax/plug`
+# `zorax.plug`
 
 > Plugin system for Zora
 
 ## Usage
 
 ```js
-import { createHarness } from '@zorax/plug'
+import { createHarness } from 'zorax/lib/plug'
 
 const options = { defaultFooMsg = 'should be foo' }
 
@@ -34,7 +34,7 @@ harness.report()
 ### `createHarnessFactory`
 
 ~~~js
-import { createHarnessFactory } from '@zorax/plug'
+import { createHarnessFactory } from 'zorax/lib/plug'
 
 const defaultPlugins = [...]
 
