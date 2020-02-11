@@ -3,7 +3,9 @@ module.exports = {
 
   watch: ['**/*.{js,css,html,json}'],
 
-  watchDebounce: 10,
-
   ignore: ['**/node_modules', '**/.git', 'dist'],
+
+  watchDebounce: 20,
+
+  map: true,
 }
