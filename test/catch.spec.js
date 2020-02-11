@@ -1,6 +1,6 @@
 import { test } from '@@'
 
-import { arrayReporter, isFunction, spy } from '@@/util'
+import { arrayReporter, isFunction, spy, isBailOut } from '@@/util'
 
 import { createHarness } from '@/plug'
 import withCatch from '@/catch'
@@ -84,4 +84,22 @@ test('with catch plugin', async t => {
     ],
     'has assertions'
   )
+})
+
+test('fatal errors are not caught', async t => {
+  const harness = createHarness([withCatch()])
+
+  const error = new Error('boom')
+  error.fatal = true
+
+  harness.test('fatal', () => {
+    throw error
+  })
+
+  const { reporter, messages } = arrayReporter({ filter: isBailOut })
+
+  await harness.report(reporter)
+
+  t.eq(messages.length, 1, 'test has bailed out')
+  t.eq(messages[0].data, error, 'bailed out because of error')
 })

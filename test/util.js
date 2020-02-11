@@ -33,7 +33,7 @@ export const blackHole = !MUTE_SUB_TESTS
       }
     }
 
-const isBailOut = ({ type }) => type === 'BAIL_OUT'
+export const isBailOut = ({ type }) => type === 'BAIL_OUT'
 
 const isAssertionMessage = ({ type }) => type === 'ASSERTION'
 
