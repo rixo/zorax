@@ -2,7 +2,7 @@ import { test, describe } from '@@'
 
 import { blackHole, isHarness } from '@@/util'
 
-import * as zorax from '@/zorax'
+import { harness } from '@/zorax'
 import createDefaultHarness from '@/zorax.defaults'
 
 const isFunction = x => typeof x === 'function'
@@ -10,7 +10,7 @@ const isFunction = x => typeof x === 'function'
 describe(__filename)
 
 test('exports default harness', t => {
-  t.ok(isHarness(zorax.harness))
+  t.ok(isHarness(harness))
 })
 
 test('default harness', t => {
@@ -26,7 +26,9 @@ test('default harness', t => {
     t.eq(harness.auto(), true)
   })
 
-  t.test('has default reporter', t => t.skip('how to test this?'))
+  t.test('has default reporter', t => {
+    t.skip('how to test this?')
+  })
 
   t.test('has describe', t => {
     t.ok(isFunction(harness.describe))
