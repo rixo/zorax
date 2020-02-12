@@ -92,8 +92,6 @@ const withShouldRun = {
   },
 }
 
-describe(__filename)
-
 const { test } = plug(withIsFunction, withShouldRun)
 
 const createOnlyHarness = ({ only = true, group = true, macro = false } = {}) =>
@@ -181,7 +179,7 @@ test('throws if only is called on sub test', async t => {
   t.ok(complete, 'test completed')
 })
 
-describe('compatibility with group', () => {
+describe('interop: defer.group', () => {
   const formatMessage = ({ offset, data: { description, pass } }) => ({
     offset,
     description,
@@ -269,7 +267,7 @@ describe('compatibility with group', () => {
   )
 
   test(
-    'compatibility with macro',
+    'interop: macro',
     macro,
     () => {
       const z = createOnlyHarness({ group: true, macro: true })
