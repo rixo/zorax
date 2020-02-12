@@ -365,6 +365,18 @@ describe('harness.plug(plugin)', () => {
       t.ok(isFunction(zz.plug), 'harness.plug().plug().plug is a function')
     })
   })
+
+  test('accepts & flatten plugin arrays', t => {
+    const p0 = { name: 0 }
+    const p1 = { name: 1 }
+    const p2 = { name: 2 }
+    const p3 = { name: 3 }
+    const p4 = { name: 4 }
+
+    const z = createHarness([p0, false, p1]).plug(p2, null, [0, p3, p4])
+
+    t.eq(z.plugins, [p0, p1, p2, p3, p4])
+  })
 })
 
 describe('hooks order', () => {
