@@ -6,9 +6,9 @@ Zorax is:
 
 - a [plugin system](./docs/plug.md) for [Zora](https://github.com/lorenzofox3/zora), the no bullshit testing library
 
-- a collection of plugins for common features and utilities (only, macro, describe, test spy...)
+- a [collection of plugins](#features--plugins) for common features and utilities (only, macro, describe, test spy...)
 
-- as well as an opinionated testing library in its own right, assembled from this collection of plugins
+- as well as an [opinionated testing library](#usage) in its own right, assembled from this collection of plugins
 
 Zora's greatness lies in its simplicity. It makes it rock solid and rocket fast. Its postcard-sized API makes it easy to learn & master in a matter of no time, and enables you to customize your test environment as much as you need with minimal friction -- because it is not encumbered with features you wouldn't need (and would probably end up fighting against).
 
@@ -119,7 +119,7 @@ function myPlugin() { // a factory (we're being fancy)
 }
 ~~~
 
-See the docs of [zorax.plug](./docs/plug.md) for the full plugin API (might be a work in progress the first few times you hit this link...).
+See the docs of [`zorax.plug`](./docs/plug.md) for the full plugin API (might be a work in progress the first few times you hit this link...).
 
 ### Defer / group / only
 
