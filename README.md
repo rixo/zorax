@@ -14,7 +14,7 @@ Zora's greatness lies in its simplicity. It makes it rock solid and rocket fast.
 
 On the flip side, since Zora provides only minimal tooling and defaults out of the box, the starts with it can be a little rough... The rest of what you need, you're expected to build it on top of its minimal base. This is great, because it avoids the bloat, and it puts you in control... But it can also be time consuming!
 
-Zorax, and its sister project, [Zoar](https://github.com/rixo/zoar) (the very opinionated test runner cli for Zora(x)), are conceived as a zero steps quick start solution to bootstrap your Zora testing. Drop them in your project, and start writing your tests immediately, with a decent level of the usual creature comfort. Then run & watch them, all or parts, with a simple command.
+Zorax, and its sister project, [Zoar](https://github.com/rixo/zoar) &ndash; the very opinionated test runner cli for Zora(x), are conceived as a zero steps quick start solution to bootstrap your Zora testing. Drop them in your project, and start writing your tests immediately, with a decent level of the usual creature comfort. Then run & watch them, all or parts, with a simple command.
 
 Yet, to keep in line with Zora's philosophy, Zorax (and Zoar) keeps a strong focus on flexibility and extensibility. This is achieved though modularity. Zorax is built entirely out of plugins that you can decompose, recompose and mix with your owns, according to your taste and needs.
 
@@ -44,7 +44,7 @@ yarn add --save-dev zorax
 
   - [zorax.defer.group](./docs/defer.group.md) dumbed down sub tests that allows grouping of top level tests (so you can have both grouping and auto `only`!)
 
-- [zorax.macro](./docs/macro.md) reuse test logic with macro pattern -- stolen directly from AVA :rocket:
+- [zorax.macro](./docs/macro.md) reuse test logic with macro pattern &ndash; stolen directly from AVA :rocket:
 
 - [zorax.alias](./docs/alias.md) configurable aliases for test context (e.g. `t.test.skip -> t.skip`)
 
