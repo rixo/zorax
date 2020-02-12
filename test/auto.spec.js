@@ -1,4 +1,3 @@
-import { createHarness as createZoraHarness } from 'zora'
 import { describe, test } from '@@'
 
 import { spy } from '@@/util'
@@ -6,12 +5,7 @@ import { spy } from '@@/util'
 import { createHarness, createHarnessFactory } from '@/plug'
 import withAuto from '@/auto'
 
-describe(__filename)
-
 const eachBool = callback => [true, false].forEach(callback)
-
-// disable zora auto start
-createZoraHarness()
 
 describe('withAuto', () => {
   describe('withAuto({ auto: bool })', () => {
