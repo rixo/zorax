@@ -62,7 +62,9 @@ const myPlugin = {
   //
   // - in the order they are called
   //
-  // - t is the target (can be test context, proxy or harness)
+  // - the 1st argument is the target obj (expected to be mutated by the hook)
+  //
+  // - t is the test context (can be test context, proxy or harness)
   // - z is the proxy (can be proxy or harness)
   // - h is the root harness (can be the same as t and/or z)
   //
@@ -108,11 +110,11 @@ pg2.decorateTest -> pg2.decorateHarness -> pg2.decorateInit
 
 Not all types of test _contexts_ go through all hooks.
 
-- the root **test harness** goes through all hooks: test, harness, init
+- the root **test harness** goes through all hooks: `test`, `harness`, `init`
 
-- **harness proxies** (returned by `plug`) go through: test, harness
+- **harness proxies** (returned by `plug`) go through: `test`, `harness`
 
-- and **test contexts** (created by `test`) go through: test
+- and **test contexts** (created by `test`) go through: `test`
 
 ### Arguments
 
@@ -125,6 +127,8 @@ Hooks of the different _stages_ are called with the following arguments:
 - `init` hooks are called with `(harness)` (which is also the target in this case)
 
 ### Notes
+
+- plugins must mutate the target object that is passed to them; the return value of the hook is ignored
 
 - a plugin with a init stage (i.e. `init` or `decorateInit` hooks) can't be added with `plug`; it can only be added at harness creation
 
