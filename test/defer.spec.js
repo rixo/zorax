@@ -1,11 +1,8 @@
 import { describe, test } from '@@'
+import { noop, arrayReporter, blackHole as bh, isHarness, spy } from '@@/util'
 
 import { createHarness } from '@/plug'
 import withDefer from '@/defer'
-
-import { arrayReporter, blackHole as bh, isHarness, spy } from '@@/util'
-
-describe(__filename)
 
 test('defers passing test', async t => {
   const z = createHarness([withDefer()])
@@ -109,6 +106,50 @@ test('defers sub tests', async t => {
   t.eq(runSubSub.callCount, 1)
 })
 
+test('does not duplicate calls to test functions in the pipeline', async t => {
+  let testBefore
+  let testAfter
+
+  const before = {
+    harness(z) {
+      testBefore = z.test = t.spy(z.test)
+    },
+  }
+
+  const after = {
+    harness(z) {
+      testAfter = z.test = t.spy(z.test)
+    },
+  }
+
+  const z = createHarness([before, withDefer(), after])
+
+  z.test('main', noop)
+
+  testAfter.wasCalledWith('main', noop)
+
+  z.test('main2', noop)
+
+  testAfter.wasCalledWith('main2', noop)
+
+  testBefore.hasBeenCalled(0)
+
+  const { reporter, messages } = arrayReporter({
+    format: msg => [msg.offset, msg.data.description],
+  })
+
+  await z.report(reporter)
+
+  testBefore.hasBeenCalled(2)
+  testBefore.wasCalled(0, ['main', noop])
+  testBefore.wasCalled(1, ['main2', noop])
+
+  // NOTE this one is a non-regression test
+  testAfter.hasBeenCalled(2)
+
+  t.eq(messages[([0, 'main'], [0, 'main2'])])
+})
+
 describe('hook: defer.add', () => {
   test('calls add hooks left to right, returned push functions right to left', async t => {
     let push1
@@ -160,7 +201,7 @@ describe('hook: defer.add', () => {
     })
   })
 
-  test('later add hooks can skip calling previous push', async t => {
+  test('later added hooks can skip calling previous push', async t => {
     let push2
 
     const p1 = {
