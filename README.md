@@ -56,6 +56,8 @@ yarn add --save-dev zorax
 
 ## Examples
 
+Highlights from the Zorax universe...
+
 ### Plug
 
 [`zorax.plug`](./docs/plug.md) is the backbone of Zorax. It implements a simple yet powerful plugin system over Zora. All other parts of Zorax rely on it.
@@ -281,7 +283,13 @@ afterRegister()
 
 ## Usage
 
-### Use default harness
+General instructions for usage of Zorax.
+
+Detailed instructions for each feature are found (will be, when complete...) in the docs for the [relevant plugin](#features--plugins).
+
+The plugin system and plugins anatomy are described in [`zorax.plug`'s docs](./docs/plug.md).
+
+### Use the default harness
 
 You can do that for an extra fast start.
 
@@ -311,18 +319,20 @@ import { test, describe } from './index.js' // for example (I suggest @@ ^^)
 // awesome tests and all...
 ~~~
 
-`index.js` (again, for example) can be as simple as:
+`index.js` (again, for example) can start as simple as this:
 
 ~~~js
-// --- index.js ---
+// --- test/index.js ---
 
 // resist `export *`! it's not worth the tiny effort it would save now
 export { test, describe, plug } from 'zorax'
 ~~~
 
+Re-exporting from `zorax` gives you a central test harness that you control. You can later extend upon it, by adding plugins to Zorax's default harness, or composing a whole harness of your own with `zorax.plug`.
+
 ### Plug in default harness
 
-All `zorax.plug` harnesses, including Zorax's default one, have a `plug` function to further extends a subset of your tests with new plugins.
+All `zorax.plug` harnesses, including Zorax's default one, have a `plug` function to further extend a subset of your tests with new plugins.
 
 The `plug` function returns a "harness proxy". It's the same as the real root harness, except that it has no reporting capability (i.e. no `report` method, no `pass` prop, etc.). And also, it has the extra plugins!
 
