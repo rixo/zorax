@@ -18,7 +18,7 @@ Zorax, and its sister project, [Zoar](https://github.com/rixo/zoar) &ndash; the 
 
 Yet, to keep in line with Zora's philosophy, Zorax (and Zoar) keeps a strong focus on flexibility and extensibility. This is achieved though modularity. Zorax is built entirely out of plugins that you can decompose, recompose and mix with your owns, according to your taste and needs.
 
-Hit the ground running, and customize later. That's the idea. Or customize right now with the ease of plugins, yet minimal overhead. Or compose your very own reusable test harness with the defaults you like. Freedom is the idea, actually!
+Hit the ground running, and customize later. That's the idea. Or customize right now with the ease of plugins, yet minimal overhead. Or compose your very own reusable test harness with the defaults you like. Ease of freedom is the idea, actually!
 
 ## Install
 
