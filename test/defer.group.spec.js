@@ -6,18 +6,7 @@ import { createHarness } from '@/plug'
 import withDefer from '@/defer'
 import withGroup from '@/defer.group'
 
-describe(__filename)
-
 const createHarnessWithGroup = () => createHarness([withDefer(), withGroup()])
-
-test('ok', t => {
-  t.pass()
-})
-
-test('', t => {
-  createHarnessWithGroup()
-  t.pass()
-})
 
 describe('requires zorax.defer', () => {
   test('throws if zorax.defer is missing', t => {
@@ -57,7 +46,11 @@ describe('collected assertions', () => {
 
       t.eq(
         messages.map(x => [x.offset, x.data.description, x.data.pass]),
-        expectedDescriptions
+        expectedDescriptions.map(([offset, desc, pass = true]) => [
+          offset,
+          desc,
+          pass,
+        ])
       )
     })
   }
