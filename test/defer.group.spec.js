@@ -23,43 +23,28 @@ describe('requires zorax.defer', () => {
 })
 
 describe('collected assertions', () => {
-  const testAssertions = (
-    desc,
-    run,
-    expectedDescriptions,
-    { test: _test = test } = {}
-  ) => {
-    return _test(desc, async t => {
-      const z = createHarnessWithGroup()
+  const macro = async (t, run, expectedDescriptions) => {
+    const z = createHarnessWithGroup()
 
-      await run(z)
+    await run(z)
 
-      const { reporter, messages } = arrayReporter()
+    const { reporter, messages } = arrayReporter()
 
-      await z.report(reporter)
+    await z.report(reporter)
 
-      // console.log(messages)
-      // console.log(
-      //   messages.map(x => [x.offset, x.data.description, x.data.pass])
-      // )
-      // // process.exit()
-
-      t.eq(
-        messages.map(x => [x.offset, x.data.description, x.data.pass]),
-        expectedDescriptions.map(([offset, desc, pass = true]) => [
-          offset,
-          desc,
-          pass,
-        ])
-      )
-    })
+    t.eq(
+      messages.map(x => [x.offset, x.data.description, x.data.pass]),
+      expectedDescriptions.map(([offset, desc, pass = true]) => [
+        offset,
+        desc,
+        pass,
+      ])
+    )
   }
 
-  testAssertions.only = (...args) =>
-    testAssertions(...args, { test: test.only })
-
-  testAssertions(
+  test(
     'in normal tests',
+    macro,
     // NOTE this test should probably be synchronzied with await
     z => {
       z.test('top level test', z => {
@@ -82,8 +67,9 @@ describe('collected assertions', () => {
     ]
   )
 
-  testAssertions(
+  test(
     'in nested group',
+    macro,
     // NOTE this test should probably be synchronzied with await
     z => {
       z.group('g1', () => {
@@ -102,8 +88,9 @@ describe('collected assertions', () => {
     ]
   )
 
-  testAssertions(
+  test(
     'in passing top level group',
+    macro,
     z => {
       z.group('top level group', () => {
         z.test('test 1', z => {
@@ -118,8 +105,9 @@ describe('collected assertions', () => {
     ]
   )
 
-  testAssertions(
+  test(
     'in failing top level group',
+    macro,
     z => {
       z.group('top level group', () => {
         z.test('test 1', z => {
@@ -134,8 +122,9 @@ describe('collected assertions', () => {
     ]
   )
 
-  testAssertions(
+  test(
     'kitchen sink',
+    macro,
     // NOTE this test should probably be synchronzied with await
     z => {
       z.test('top level test', z => {
@@ -186,8 +175,9 @@ describe('collected assertions', () => {
     ]
   )
 
-  testAssertions(
+  test(
     'no test is created for empty groups',
+    macro,
     // NOTE this test should probably be synchronzied with await
     z => {
       // z.group('empty', () => {})
