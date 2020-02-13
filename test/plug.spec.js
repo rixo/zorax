@@ -646,3 +646,10 @@ test('decorateHarness hook does not overwrite test', t => {
   t.eq(plugin.decorateHarness.callCount, 1)
   t.is(z.test, foo)
 })
+
+test('harness.report is bound to harness', t =>
+  t.doesNotReject(() => {
+    const z = createHarness()
+    const { report } = z
+    return report()
+  }))
