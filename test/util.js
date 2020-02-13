@@ -40,12 +40,13 @@ const isAssertionMessage = ({ type }) => type === 'ASSERTION'
 export const arrayReporter = ({
   filter = isAssertionMessage,
   error = isBailOut,
+  format,
 } = {}) => {
   const messages = []
   const reporter = async stream => {
     for await (const msg of stream) {
       if (filter(msg)) {
-        messages.push(msg)
+        messages.push(format ? format(msg) : msg)
       } else if (error(msg)) {
         // eslint-disable-next-line no-console
         console.error(msg.data)
