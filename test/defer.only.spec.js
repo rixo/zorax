@@ -267,6 +267,39 @@ describe('interop: defer.group', () => {
   )
 
   test(
+    'regress: empties sub groups',
+    macro,
+    () => {
+      const z = createOnlyHarness({ group: true, macro: true })
+
+      const zz = z.plug({
+        test(t) {
+          const { test } = t
+          t.test = (...args) => test(...args)
+        },
+      })
+
+      zz.group('group', () => {
+        zz.group('inner group', () => {
+          zz.test('test', zz => {
+            zz.fail('should not run')
+          })
+        })
+      })
+
+      zz.only('only', zz => {
+        zz.ok(true, 'ook!')
+      })
+
+      return z
+    },
+    [
+      { offset: 1, description: 'ook!', pass: true },
+      { offset: 0, description: 'only', pass: true },
+    ]
+  )
+
+  test(
     'interop: macro',
     macro,
     () => {
