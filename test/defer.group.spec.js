@@ -202,18 +202,51 @@ describe('collected assertions', () => {
     ]
   )
 
-  // testAssertions(
-  //   'group nested in sub test',
-  //   z => {
-  //     z.test('top lvl tst', z => {
-  //       z.it('craacks', z => {
-  //         z.ok(true)
-  //       })
-  //     })
-  //   },
-  //   [
-  //     [1, 'should be truthy', true],
-  //     [0, 'top lvl tst', true],
-  //   ]
-  // )
+  test(
+    'no handler groups',
+    macro,
+    z => {
+      z.group('top')
+      z.group('a', () => {
+        z.test('a > main', z => {
+          z.ok(true, 'a > main > ok')
+        })
+      })
+      z.group('b', () => {
+        z.test('b > main', z => {
+          z.ok(true, 'b > main > ok')
+        })
+      })
+    },
+    [
+      [3, 'a > main > ok'],
+      [2, 'a > main'],
+      [1, 'a'],
+      [3, 'b > main > ok'],
+      [2, 'b > main'],
+      [1, 'b'],
+      [0, 'top'],
+    ]
+  )
+})
+
+describe("group('foo') with no handlers", () => {
+  test("is only allowed at top level (can't be nested)", t => {
+    const z = createHarnessWithGroup()
+
+    let done = false
+
+    t.doesNotThrow(() => {
+      z.group('top')
+    })
+
+    z.group('top 2', () => {
+      t.throws(() => {
+        z.group('nested')
+      }, /\bcan't be nested|top level\b/)
+      done = true
+    })
+
+    t.ok(done, 'test completed')
+  })
 })
