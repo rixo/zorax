@@ -651,5 +651,5 @@ test('harness.report is bound to harness', t =>
   t.doesNotReject(() => {
     const z = createHarness()
     const { report } = z
-    return report()
+    return report(bh)
   }))
