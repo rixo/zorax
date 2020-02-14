@@ -1,6 +1,6 @@
 import { describe, test } from '@@'
 import {
-  blackHole as bh,
+  blackHole,
   isFunction,
   isHarness,
   isHarnessFactory,
@@ -218,7 +218,7 @@ describe('harness.report(...)', () => {
     const z = createHarness()
     const run = spy(assert)
     z.test('main', run)
-    await z.report(bh)
+    await z.report(blackHole)
     t.eq(run.callCount, 1, 'run has been called')
     if (pass) {
       t.ok(z.pass, 'passing test passes')
@@ -311,7 +311,7 @@ test('harness reports tests from child proxies', async t => {
     })
   })
 
-  await harness.report(bh)
+  await harness.report(blackHole)
 
   t.eq(harness.count, 3 * 13)
   t.eq(harness.successCount, 3 * 6)
@@ -486,7 +486,7 @@ describe('hooks order', () => {
 
     const z = createTestHarness(pg1, pg2)
 
-    await z.report(bh)
+    await z.report(blackHole)
 
     t.eq(pg1.test.callCount, 1, 'pg1.test, 1')
     t.eq(pg1.decorate.callCount, 1, 'pg1.decorate, 1')
@@ -651,5 +651,5 @@ test('harness.report is bound to harness', t =>
   t.doesNotReject(() => {
     const z = createHarness()
     const { report } = z
-    return report(bh)
+    return report(blackHole)
   }))
