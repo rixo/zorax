@@ -53,8 +53,6 @@ const filtersOutFalsy = (t, init) => {
 
 filtersOutFalsy.title = pre => pre + 'filters out falsy plugins'
 
-describe(__filename)
-
 test("import { createHarnessFactory } from 'zorax/lib/plug'", t => {
   t.ok(isFunction(createHarnessFactory), 'createHarnessFactory is a function')
 })
