@@ -5,8 +5,6 @@ import { blackHole, isFunction, isHarness, isTestContext, spy } from '@@/util'
 import { createHarness, createHarnessFactory } from '@/plug'
 import withMacro from '@/macro'
 
-describe(__filename)
-
 const createHarnessWithMacro = createHarnessFactory([withMacro()])
 
 const createTestSpy = ({ hook = 'harness' } = {}) => {
