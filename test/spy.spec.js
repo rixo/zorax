@@ -464,6 +464,42 @@ describe('a spy', () => {
         })
       })
 
+      test(
+        'wasCalled(msg): failed call',
+        fail,
+        {
+          before: spy => {
+            // prettier-ignore
+            spy.wasCalled('alice').with('foo', 42, null).returned(b)
+          },
+        },
+        ['alice should have been called 1 time']
+      )
+
+      test(
+        'wasCalled(msg): failed arguments',
+        fail,
+        {
+          between: spy => {
+            // prettier-ignore
+            spy.wasCalled('alice').with('bar')
+          },
+        },
+        ["alice should be called at #0 with ('bar')"]
+      )
+
+      test(
+        'wasCalled(msg): failed return value',
+        fail,
+        {
+          between: spy => {
+            // prettier-ignore
+            spy.wasCalled('alice').with('foo', 42, null).returned(b)
+          },
+        },
+        ["alice call #0 should return { name: 'b' }"]
+      )
+
       test(pass, {
         between: spy => {
           // prettier-ignore
