@@ -2,23 +2,11 @@
 
 > Zora, extended
 
-Zorax is:
+Zorax is a lightweight testing library built over [Zora](https://github.com/lorenzofox3/zora) with some added features and tooling that I like.
 
-- a [plugin system](./docs/plug.md) for [Zora](https://github.com/lorenzofox3/zora), the no bullshit testing library
+Zorax's fundamental piece is `@zorax/plug`, that adds a plugin system over Zora.
 
-- a [collection of plugins](#features--plugins) for common features and utilities (only, macro, describe, test spy...)
-
-- as well as an [opinionated testing library](#usage) in its own right, assembled from this collection of plugins
-
-Zora's greatness lies in its simplicity. It makes it rock solid and rocket fast. Its postcard-sized API makes it easy to learn & master in a matter of no time, and enables you to customize your test environment as much as you need with minimal friction -- because it is not encumbered with features you wouldn't need (and would probably end up fighting against).
-
-On the flip side, since Zora provides only minimal tooling and defaults out of the box, the starts with it can be a little rough... The rest of what you need, you're expected to build it on top of its minimal base. This is great, because it avoids the bloat, and it puts you in control... But it can also be time consuming!
-
-Zorax, and its sister project, [Zoar](https://github.com/rixo/zoar) &ndash; the very opinionated test runner cli for Zora(x), are conceived as a zero steps quick start solution to bootstrap your Zora testing. Drop them in your project, and start writing your tests immediately, with a decent level of the usual creature comfort. Then run & watch them, all or parts, with a simple command.
-
-Yet, to keep in line with Zora's philosophy, Zorax (and Zoar) keeps a strong focus on flexibility and extensibility. This is achieved though modularity. Zorax is built entirely out of plugins that you can decompose, recompose and mix with your owns, according to your taste and needs.
-
-Hit the ground running, and customize later. That's the idea. Or customize right now with the ease of plugins, yet minimal overhead. Or compose your very own reusable test harness with the defaults you like. Ease of freedom is the idea, actually!
+Zorax itself is entirely built out of plugins. You can use it as a whole, or recompose some of its plugins with you owns to build your own harness to your liking.
 
 ## Install
 
@@ -44,7 +32,11 @@ yarn add --save-dev zorax
 
   - [zorax.defer.group](./docs/defer.group.md) dumbed down sub tests that allows grouping of top level tests (so you can have both grouping and auto `only`!)
 
+  - [zorax.defer.print](./docs/defer.print.md) print test titles instead of running them
+
 - [zorax.macro](./docs/macro.md) reuse test logic with macro pattern &ndash; stolen directly from AVA :rocket:
+
+- [zorax.filter](./docs/filter.md) filter (top level) tests by title
 
 - [zorax.alias](./docs/alias.md) configurable aliases for test context (e.g. `t.test.skip -> t.skip`)
 
@@ -125,9 +117,9 @@ See the docs of [`zorax.plug`](./docs/plug.md) for the full plugin API (might be
 
 ### Defer / group / only
 
-`zorax.defer` registers top level tests (that is, calls to the `harness.test` method) but defers running them until next tick.
+`zorax.defer` registers top level tests (that is, calls to the `harness.test` method) but defers running them until `harness.report` is called.
 
-This allows `zorax.defer.only` to know if one of the tests has called `only` and automatically skip them if it's the case.
+This allows `zorax.defer.only` to know if one of the tests has called `only` and automatically skip other tests if it's the case.
 
 This only works for top level tests though, since we can't know about the sub tests before we've run the parents.
 
