@@ -212,6 +212,34 @@ export default ({ createGroupHarness }) => {
     ]
   )
 
+  test(
+    'no desc groups',
+    macro,
+    z => {
+      z.group(() => {
+        z.test('main', z => {
+          z.test('main > sub', z => {
+            z.eq(42, 42, 'main > sub > eq')
+          })
+        })
+
+        z.group('sub group', () => {
+          z.test('sub group > main', z => {
+            z.ok(true, 'sub group > main > ok')
+          })
+        })
+      })
+    },
+    [
+      [2, 'main > sub > eq'],
+      [1, 'main > sub'],
+      [0, 'main'],
+      [2, 'sub group > main > ok'],
+      [1, 'sub group > main'],
+      [0, 'sub group'],
+    ]
+  )
+
   describe("group('foo') with no handlers", () => {
     test("is only allowed at top level (can't be nested)", t => {
       const z = createGroupHarness()
