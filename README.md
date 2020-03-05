@@ -20,7 +20,7 @@ yarn add --save-dev zorax
 
 :warning: Docs in the [./docs](./docs) folder are currently completely outdated. Please refer to the examples bellow for now.
 
-- [zorax.plug](./docs/plug.md) makes Zora extensible with a plugin system
+- [@zorax/plug](https://github.com/rixo/zorax-plug) makes Zora extensible with a plugin system
 
 - [zorax.auto](./docs/auto.md) makes the "test is the program" paradigm easy for custom harnesses
 
@@ -54,10 +54,10 @@ Highlights from the Zorax universe...
 
 ### Plug
 
-[`zorax.plug`](https://github.com/rixo/zorax-plug#readme) is the backbone of Zorax. It implements a simple yet powerful plugin system over Zora. All other parts of Zorax rely on it.
+[`@zorax/plug`](https://github.com/rixo/zorax-plug#readme) is the backbone of Zorax. It implements a simple yet powerful plugin system over Zora. All other parts of Zorax rely on it.
 
 ~~~js
-// zorax.plug creates plugin aware harnesses
+// @zorax/plug creates plugin aware harnesses
 import { createHarness } from '@zorax/plug'
 
 // use with stock plugins
@@ -115,7 +115,7 @@ function myPlugin() { // a factory (we're being fancy)
 }
 ~~~
 
-See the docs of [`zorax.plug`](./docs/plug.md) for the full plugin API (might be a work in progress the first few times you hit this link...).
+See the docs of [`@zorax/plug`](https://github.com/rixo/zorax-plug) for the full plugin API (might be a work in progress the first few times you hit this link...).
 
 ### Defer / group / only
 
@@ -333,7 +333,7 @@ General instructions for usage of Zorax.
 
 Detailed instructions for each feature are found (will be, when complete...) in the docs for the [relevant plugin](#features--plugins).
 
-The plugin system and plugins anatomy are described in [`zorax.plug`'s docs](./docs/plug.md).
+The plugin system and plugins anatomy are described in [`@zorax/plug`'s docs](https://github.com/rixo/zorax-plug).
 
 ### Use the default harness
 
@@ -374,11 +374,11 @@ import { test, describe } from './index.js' // for example (I suggest @@ ^^)
 export { test, describe, plug } from 'zorax'
 ~~~
 
-Re-exporting from `zorax` gives you a central test harness that you control. You can later extend upon it, by adding plugins to Zorax's default harness, or composing a whole harness of your own with `zorax.plug`.
+Re-exporting from `zorax` gives you a central test harness that you control. You can later extend upon it, by adding plugins to Zorax's default harness, or composing a whole harness of your own with `@zorax/plug`.
 
 ### Plug in default harness
 
-All `zorax.plug` harnesses, including Zorax's default one, have a `plug` function to further extend a subset of your tests with new plugins.
+All `@zorax/plug` harnesses, including Zorax's default one, have a `plug` function to further extend a subset of your tests with new plugins.
 
 The `plug` function returns a "harness proxy". It's the same as the real root harness, except that it has no reporting capability (i.e. no `report` method, no `pass` prop, etc.). And also, it has the extra plugins!
 
