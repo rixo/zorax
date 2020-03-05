@@ -8,7 +8,7 @@
     "plugins"
   ],
   "author": "rixo <rixo@rixo.fr>",
-  "license": "MIT",
+  "license": "ISC",
   "homepage": "https://github.com/rixo/zorax",
   "bugs": {
     "url": "https://github.com/rixo/zorax/issues"
