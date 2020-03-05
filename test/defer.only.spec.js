@@ -390,13 +390,9 @@ describe('group.only / skip', () => {
         expected.map(x => ({
           pass: true,
           skip: false,
-          ...(Array.isArray(x)
-            ? {
-                offset: x[0],
-                description: x[1],
-                ...x[2],
-              }
-            : x),
+          offset: x[0],
+          description: x[1],
+          ...x[2],
         }))
       )
     }
@@ -426,15 +422,15 @@ describe('group.only / skip', () => {
       z.only(t.shouldRun('only test'))
     },
     [
-      { offset: 1, description: 'group.only > test 1' },
-      { offset: 1, description: 'group.only > test 2' },
-      { offset: 1, description: 'group.only > skip', skip: true },
-      { offset: 2, description: 'group.only > group > test 1' },
-      { offset: 2, description: 'group.only > group > test 2' },
-      { offset: 2, description: 'group.only > group > skip', skip: true },
-      { offset: 1, description: 'group.only > group' },
-      { offset: 0, description: 'group.only' },
-      { offset: 0, description: 'only test' },
+      [1, 'group.only > test 1'],
+      [1, 'group.only > test 2'],
+      [1, 'group.only > skip', { skip: true }],
+      [2, 'group.only > group > test 1'],
+      [2, 'group.only > group > test 2'],
+      [2, 'group.only > group > skip', { skip: true }],
+      [1, 'group.only > group'],
+      [0, 'group.only'],
+      [0, 'only test'],
     ]
   )
 
@@ -520,12 +516,12 @@ describe('group.only / skip', () => {
       z.test(t.shouldRun('test after'))
     },
     [
-      { offset: 0, description: 'top level before' },
-      { offset: 0, description: 'group.only', skip: true },
-      { offset: 1, description: 'other group > test' },
-      { offset: 1, description: 'other group > group.skip', skip: true },
-      { offset: 0, description: 'other group' },
-      { offset: 0, description: 'test after' },
+      [0, 'top level before'],
+      [0, 'group.only', { skip: true }],
+      [1, 'other group > test'],
+      [1, 'other group > group.skip', { skip: true }],
+      [0, 'other group'],
+      [0, 'test after'],
     ]
   )
 
@@ -541,9 +537,9 @@ describe('group.only / skip', () => {
       z.test(t.shouldRun('failing test'))
     },
     [
-      { offset: 0, description: 'group.skip', skip: true },
-      { offset: 0, description: 'passing test' },
-      { offset: 0, description: 'failing test' },
+      [0, 'group.skip', { skip: true }],
+      [0, 'passing test'],
+      [0, 'failing test'],
     ]
   )
 })
