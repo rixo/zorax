@@ -4,7 +4,7 @@
 
 Zorax is a lightweight testing library built over [Zora](https://github.com/lorenzofox3/zora) with some added features and tooling that I like.
 
-Zorax's fundamental piece is `@zorax/plug`, that adds a plugin system over Zora.
+Zorax's fundamental part is `@zorax/plug`, that adds a plugin system over Zora. It an be used standalone if all you want is extensibility.
 
 Zorax itself is entirely built out of plugins. You can use it as a whole, or recompose some of its plugins with you owns to build your own harness to your liking.
 
@@ -17,6 +17,8 @@ yarn add --save-dev zorax
 ~~~
 
 ## Features / plugins
+
+:warning: Docs in the [./docs](./docs) folder are currently completely outdated. Please refer to the examples bellow for now.
 
 - [zorax.plug](./docs/plug.md) makes Zora extensible with a plugin system
 
@@ -151,6 +153,58 @@ describe('defer / group / only', () => {
     })
   })
 })
+~~~
+
+#### Anonymous groups
+
+A convenience alternative to an IIFE. Anonymous groups don't create an extra level of indentation in your tests.
+
+~~~js
+describe(() => {
+  test('main', ...)
+})
+~~~
+
+#### Anonymous groups with only / skip
+
+Your IIFE can't do that, can it?
+
+~~~js
+describe.only(() => {
+  test('only foo', ...)
+  test('only bar', ...)
+})
+
+describe.skip(() => {
+  ...
+})
+~~~
+
+#### Top level groups
+
+~~~js
+describe('foo')
+
+test('a', ...)
+
+describe('bar')
+
+test('b', ...)
+~~~
+
+##### Top level groups with only
+
+~~~js
+describe('foo')
+
+test('will be skipped', ...)
+
+describe('bar')
+
+describe.only()
+
+// only this test will run, and will be reported as 'bar <<< ONLY > a'
+test('a', ...)
 ~~~
 
 ### Macro
