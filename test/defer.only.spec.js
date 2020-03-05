@@ -526,6 +526,45 @@ describe('group.only / skip', () => {
   )
 
   test(
+    'group.skip(() => {...})',
+    macro,
+    (z, t) => {
+      z.test(t.shouldRun('top level before'))
+
+      z.group.skip(() => {
+        z.test(t.shouldNotRun('group.only > test 1'))
+        z.test(
+          t.shouldNotRun('group.only > test 2', z => {
+            z.fail('not here')
+          })
+        )
+        z.skip(t.shouldNotRun('group.only > skip'))
+        z.group('group.only > group', () => {
+          z.test(t.shouldNotRun('group.only > group > test 1'))
+          z.test(t.shouldNotRun('group.only > group > test 2'))
+          z.skip(t.shouldNotRun('group.only > group > skip'))
+        })
+      })
+
+      z.group('other group', () => {
+        z.test(t.shouldRun('other group > test'))
+        z.group.skip(() => {
+          z.test(t.shouldNotRun('other group > group.skip > test'))
+          z.only(t.shouldNotRun('other group > group.skip > only'))
+        })
+      })
+
+      z.test(t.shouldRun('test after'))
+    },
+    [
+      [0, 'top level before'],
+      [1, 'other group > test'],
+      [0, 'other group'],
+      [0, 'test after'],
+    ]
+  )
+
+  test(
     'group.skip > only',
     macro,
     (z, t) => {
