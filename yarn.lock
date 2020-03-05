@@ -1626,8 +1626,8 @@ zora@^3.0.0:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
 
-zorax@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.4.tgz#8eeb911f736e574717b1e018bb3594d40d29aec7"
+zorax@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.7.tgz#c9bf38c7a5ec2538a191b875ceca5846f7dcd67a"
   dependencies:
     zora "^3.0.0"
