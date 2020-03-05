@@ -2,7 +2,7 @@ import { test, describe } from '@@'
 
 import { blackHole, isFunction, isHarness, isTestContext, spy } from '@@/util'
 
-import { createHarness, createHarnessFactory } from '@/plug'
+import { createHarness, createHarnessFactory } from '@zorax/plug'
 import withMacro from '@/macro'
 
 const createHarnessWithMacro = createHarnessFactory([withMacro()])

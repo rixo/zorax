@@ -54,11 +54,11 @@ Highlights from the Zorax universe...
 
 ### Plug
 
-[`zorax.plug`](./docs/plug.md) is the backbone of Zorax. It implements a simple yet powerful plugin system over Zora. All other parts of Zorax rely on it.
+[`zorax.plug`](https://github.com/rixo/zorax-plug#readme) is the backbone of Zorax. It implements a simple yet powerful plugin system over Zora. All other parts of Zorax rely on it.
 
 ~~~js
 // zorax.plug creates plugin aware harnesses
-import { createHarness } from 'zorax/lib/plug'
+import { createHarness } from '@zorax/plug'
 
 // use with stock plugins
 import spy from 'zorax/lib/spy'
@@ -416,7 +416,7 @@ node -r esm test/foo.spec.js
 
 ~~~js
 // test/index.js
-import { createHarness } from 'zorax/lib/plug'
+import { createHarness } from '@zorax/plug'
 import auto from 'zorax/lib/auto'
 
 // it's the default zorax harness, so it already has auto, defer, etc.

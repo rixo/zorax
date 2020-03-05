@@ -2,7 +2,7 @@ import { describe, plug } from '@@'
 
 import { blackHole, arrayReporter } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withDefer from '@/defer'
 import withOnly from '@/defer.only'
 import withGroup from '@/defer.group'

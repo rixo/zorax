@@ -2,7 +2,7 @@ import { test } from '@@'
 
 import { arrayReporter, isFunction, spy, isBailOut } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withCatch from '@/catch'
 
 test('withCatch', t => {

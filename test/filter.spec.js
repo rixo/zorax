@@ -1,7 +1,7 @@
 import { test, describe } from '@@'
 import { arrayReporter, noop } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withDefer from '@/defer'
 import withFilter from '@/filter'
 import withGroup from '@/defer.group'

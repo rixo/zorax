@@ -1,7 +1,7 @@
 import { test, describe } from '@@'
 import { spy, arrayReporter } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withSpy from '@/spy'
 
 describe('withSpy', () => {

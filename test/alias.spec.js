@@ -1,7 +1,7 @@
 import { test } from '@@'
 import { isHarness } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withAlias from '@/alias'
 
 test('does not break createHarness', t => {

@@ -2,7 +2,7 @@ import { describe, test } from '@@'
 
 import { spy } from '@@/util'
 
-import { createHarness, createHarnessFactory } from '@/plug'
+import { createHarness, createHarnessFactory } from '@zorax/plug'
 import withAuto from '@/auto'
 
 const eachBool = callback => [true, false].forEach(callback)

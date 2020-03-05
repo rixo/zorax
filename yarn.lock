@@ -176,6 +176,12 @@
   dependencies:
     "@types/node" "*"
 
+"@zorax/plug@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.1.tgz#eca166b4ec1c5d0fa929b02e7e736e29c9e03961"
+  dependencies:
+    zora "^3.1.8"
+
 acorn-jsx@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.1.0.tgz#294adb71b57398b0680015f0a38c563ee1db5384"
@@ -1622,7 +1628,7 @@ zora-tap-reporter@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/zora-tap-reporter/-/zora-tap-reporter-2.0.0.tgz#eeba3fea0bcb2fea2a6afe6cb04fa0fcb3095f63"
 
-zora@^3.0.0:
+zora@^3.0.0, zora@^3.1.8:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
 

@@ -1,6 +1,6 @@
 import { describe, test } from '@@'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withDefer from '@/defer'
 import withGroup from '@/defer.group'
 

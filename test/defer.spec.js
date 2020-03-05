@@ -1,7 +1,7 @@
 import { describe, test } from '@@'
 import { noop, arrayReporter, blackHole as bh, isHarness, spy } from '@@/util'
 
-import { createHarness } from '@/plug'
+import { createHarness } from '@zorax/plug'
 import withDefer from '@/defer'
 
 test('defers passing test', async t => {
