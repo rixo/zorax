@@ -382,10 +382,22 @@ describe('group.only / skip', () => {
 
     t.ok(z.pass)
 
+    t.flush()
+
     if (expected) {
       t.eq(
         messages.map(formatMessage),
-        expected.map(x => ({ pass: true, skip: false, ...x }))
+        expected.map(x => ({
+          pass: true,
+          skip: false,
+          ...(Array.isArray(x)
+            ? {
+                offset: x[0],
+                description: x[1],
+                ...x[2],
+              }
+            : x),
+        }))
       )
     }
   }
@@ -425,6 +437,56 @@ describe('group.only / skip', () => {
       { offset: 0, description: 'only test' },
     ]
   )
+
+  const macro_top_level_only = (t, title) =>
+    macro(
+      t,
+      (z, t) => {
+        z.test(t.shouldNotRun('top level before'))
+
+        z.group('top group')
+
+        z.group.only(title)
+
+        z.group('group.only', () => {
+          z.test(t.shouldRun('group.only > test 1'))
+          z.test(t.shouldRun('group.only > test 2'))
+          z.skip(t.shouldNotRun('group.only > skip'))
+          z.group('group.only > group', () => {
+            z.test(t.shouldRun('group.only > group > test 1'))
+            z.test(t.shouldRun('group.only > group > test 2'))
+            z.skip(t.shouldNotRun('group.only > group > skip'))
+          })
+        })
+
+        z.group('other group', () => {
+          z.test(t.shouldRun('other group > test'))
+        })
+
+        z.only(t.shouldRun('only test'))
+
+        z.group('next top level group')
+
+        z.test(t.shouldNotRun('next top level group > test'))
+      },
+      [
+        [2, 'group.only > test 1'],
+        [2, 'group.only > test 2'],
+        [2, 'group.only > skip', { skip: true }],
+        [3, 'group.only > group > test 1'],
+        [3, 'group.only > group > test 2'],
+        [3, 'group.only > group > skip', { skip: true }],
+        [2, 'group.only > group'],
+        [1, 'group.only'],
+        [2, 'other group > test'],
+        [1, 'other group'],
+        [1, 'only test'],
+        [0, title ? title : 'top group <<< ONLY'],
+      ]
+    )
+
+  test('group.only()', macro_top_level_only)
+  test('group.only("foo")', macro_top_level_only, 'foo')
 
   test(
     'group.skip',
