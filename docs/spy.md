@@ -94,7 +94,7 @@ t.eq(spy.args, ['foo'])
 t.eq(spy.returns, [42])
 ~~~
 
-### Assertions: `hasBeenCalled`, `wasCalled`
+### Assertions: `hasBeenCalled`, `wasCalled`, `wasNotCalled`
 
 #### Global
 
@@ -138,8 +138,12 @@ const spy = t.spy(() => 'world')
 // NOTE this one you wouldn't need in real life, it's just for demo
 spy.wasCalled() // fails: expected invocation has not happened
 
+spy.wasNotCalled()
+
 spy('hello')
 spy.wasCalled().with('hello').returned('world')
+
+spy.wasNotCalled()
 
 spy('alo')
 spy.wasCalled().with('alo').returned('world')

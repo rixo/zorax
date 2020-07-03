@@ -563,6 +563,27 @@ describe('a spy', () => {
       )
     })
 
+    describe('spy.wasNotCalled()', () => {
+      test(pass, {
+        before: spy => {
+          spy.wasNotCalled()
+        },
+        between: spy => {
+          spy.wasCalled()
+          spy.wasNotCalled()
+        },
+        after: spy => {
+          spy.wasCalled()
+          spy.wasNotCalled()
+        },
+      })
+      test(fail, {
+        between: spy => {
+          spy.wasNotCalled()
+        },
+      })
+    })
+
     describe('spy.returned(result)', () => {
       test('reverse form', pass, {
         between: spy => {
