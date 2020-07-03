@@ -1645,9 +1645,10 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-zoar@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.0.1.tgz#86fd79268c0bd0107f02815a89037e8e2b695692"
+zoar@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.0.4.tgz#082e877dc50e6984d6b8a763ba66ad8c6f6f94cc"
+  integrity sha512-7EtSFuJHOXH0CdEmD5F9xpFs1RG4FdP+V5uUq03qm/tWpoOQa12WWfbWurBvkQ0sKkn52wEGIyfqzkqbfZlr7Q==
   dependencies:
     arg "^4.1.2"
     cheap-watch "^1.0.2"
