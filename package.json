@@ -24,7 +24,7 @@
     "lib"
   ],
   "dependencies": {
-    "@zorax/plug": "^0.0.1",
+    "@zorax/plug": "^0.0.2",
     "zora": "^3.0.0"
   },
   "devDependencies": {

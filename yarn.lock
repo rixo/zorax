@@ -180,9 +180,10 @@
   dependencies:
     "@types/node" "*"
 
-"@zorax/plug@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.1.tgz#eca166b4ec1c5d0fa929b02e7e736e29c9e03961"
+"@zorax/plug@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.2.tgz#dbedd1a7e89a60a2ddec7a5c207349b98b7096ff"
+  integrity sha512-P6W7RakGXkRlow4Al+VR/K+tceSqjGJvxJyPfFMj+7xXTogqKnmE8SAtnGOeg6G6UPT+/Cz4kdy8sqhipNqYKg==
   dependencies:
     zora "^3.1.8"
 
