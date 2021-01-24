@@ -752,4 +752,103 @@ describe('a spy', () => {
       t.eq(spies.bar.calls, [[['bin'], undefined]])
     })
   })
+
+  describe('await next call', () => {
+    test('spy.nextCall()', async t => {
+      let index = 0
+      const spy = t.spy(() => index++)
+
+      {
+        let resolved = false
+        let result = null
+        const nextCall = spy.nextCall().then(() => {
+          resolved = true
+        })
+        t.notOk(resolved, 'is not resolved before call')
+        t.eq(result, null)
+        setTimeout(() => {
+          result = spy()
+        })
+        await nextCall
+        t.ok(resolved, 'is resolved after call')
+        t.eq(result, 0, 'spied function returns before next call resolves')
+      }
+
+      {
+        let resolved = false
+        let result = null
+        const nextCall = spy.nextCall().then(() => {
+          resolved = true
+        })
+        t.notOk(resolved, 'is not resolved before second call')
+        t.eq(result, null)
+        setTimeout(() => {
+          result = spy()
+        })
+        await nextCall
+        t.ok(resolved, 'is resolved after second call')
+        t.eq(result, 1, 'spied function returns before next call 2 resolves')
+      }
+    })
+
+    test('spy.nextCallAfter(op)', async t => {
+      let index = 0
+      const spy = t.spy(() => index++)
+
+      {
+        let result = null
+        await spy.nextCallAfter(() => {
+          result = spy()
+        })
+        t.eq(result, 0, 'spied function returns before next call resolves')
+      }
+
+      {
+        let result = null
+        await spy.nextCallAfter(() => {
+          result = spy()
+        })
+        t.eq(
+          result,
+          1,
+          'spied function returns before subsequent next call resolves'
+        )
+      }
+    })
+
+    test('spy.nextCallAfter(async op)', async t => {
+      let index = 0
+      const spy = t.spy(() => index++)
+
+      {
+        let result = null
+        await spy.nextCallAfter(async () => {
+          await new Promise(resolve =>
+            setTimeout(() => {
+              result = spy()
+              resolve()
+            })
+          )
+        })
+        t.eq(result, 0, 'spied function returns before next call resolves')
+      }
+
+      {
+        let result = null
+        await spy.nextCallAfter(async () => {
+          await new Promise(resolve =>
+            setTimeout(() => {
+              result = spy()
+              resolve()
+            })
+          )
+        })
+        t.eq(
+          result,
+          1,
+          'spied function returns before subsequent next call resolves'
+        )
+      }
+    })
+  })
 })

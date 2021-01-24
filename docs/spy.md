@@ -110,7 +110,7 @@ spy.hasBeenCalled(
 )
 ~~~
 
-### About a specific call
+#### About a specific call
 
 ~~~js
 // assert, for call at index, args and return value (compact)
@@ -124,6 +124,41 @@ spy.wasCalled(0).returned(42)
 
 // ... or return value
 spy.wasCalled(0).with('foo')
+~~~
+
+### Wait for next call: `nextCall`, `nextCallAfter`
+
+Wait for the next call to the spy:
+
+~~~js
+const nextCall = spy.nextCall()
+
+setTimeout(spy, 10)
+
+await nextCall
+~~~
+
+`nextCallAfter` allows for a leaner syntax in simple cases:
+
+~~~js
+await spy.nextCallAfter(() => {
+  setTimeout(() => {
+    spy()
+  }, 10)
+})
+~~~
+
+The op function can be async, so that errors are correctly forwarded to the test function:
+
+~~~js
+await spy.nextCallAfter(async () => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+      spy()
+    }, 10)
+  })
+})
 ~~~
 
 ### Stateful assertions: "assert along"
