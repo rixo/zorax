@@ -180,6 +180,13 @@
   dependencies:
     "@types/node" "*"
 
+"@zorax/plug@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.1.tgz#eca166b4ec1c5d0fa929b02e7e736e29c9e03961"
+  integrity sha512-jE30OmUMArSsEQDXmBvN4Tk2tL4ihRucAW9cqVqP0twjtGQsB5pwdcG0vWJA0cVWXOG2w3iHBKbEsBG92L8tyA==
+  dependencies:
+    zora "^3.1.8"
+
 "@zorax/plug@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.2.tgz#dbedd1a7e89a60a2ddec7a5c207349b98b7096ff"
@@ -1678,8 +1685,10 @@ zora@^3.0.0, zora@^3.1.8:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/zora/-/zora-3.1.8.tgz#84cf75a057005931058db43366cad8c75a21f04c"
 
-zorax@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.7.tgz#c9bf38c7a5ec2538a191b875ceca5846f7dcd67a"
+zorax@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.11.tgz#52cfe93117f1b6bccf249672cf51c9ddc87e393c"
+  integrity sha512-ueva8cY2+zTXFGMpxYxzWu63stlswdXZUk8W0HZRs301Ri8UwtQy2LplfHtPXnQqOpFhjK38X2Fnufh7mJSNXQ==
   dependencies:
+    "@zorax/plug" "^0.0.1"
     zora "^3.0.0"
