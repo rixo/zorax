@@ -183,14 +183,12 @@
 "@zorax/plug@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.1.tgz#eca166b4ec1c5d0fa929b02e7e736e29c9e03961"
-  integrity sha512-jE30OmUMArSsEQDXmBvN4Tk2tL4ihRucAW9cqVqP0twjtGQsB5pwdcG0vWJA0cVWXOG2w3iHBKbEsBG92L8tyA==
   dependencies:
     zora "^3.1.8"
 
 "@zorax/plug@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@zorax/plug/-/plug-0.0.2.tgz#dbedd1a7e89a60a2ddec7a5c207349b98b7096ff"
-  integrity sha512-P6W7RakGXkRlow4Al+VR/K+tceSqjGJvxJyPfFMj+7xXTogqKnmE8SAtnGOeg6G6UPT+/Cz4kdy8sqhipNqYKg==
   dependencies:
     zora "^3.1.8"
 
@@ -1038,7 +1036,6 @@ locate-path@^5.0.0:
 lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
   version "4.17.19"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
-  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
 magic-string@^0.25.2:
   version "0.25.6"
@@ -1654,10 +1651,9 @@ write@1.0.3:
   dependencies:
     mkdirp "^0.5.1"
 
-zoar@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.0.4.tgz#082e877dc50e6984d6b8a763ba66ad8c6f6f94cc"
-  integrity sha512-7EtSFuJHOXH0CdEmD5F9xpFs1RG4FdP+V5uUq03qm/tWpoOQa12WWfbWurBvkQ0sKkn52wEGIyfqzkqbfZlr7Q==
+zoar@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/zoar/-/zoar-0.3.0.tgz#4f36c6ca4849776c1b2b1fea66aa0d05a466900c"
   dependencies:
     arg "^4.1.2"
     cheap-watch "^1.0.2"
@@ -1688,7 +1684,6 @@ zora@^3.0.0, zora@^3.1.8:
 zorax@^0.0.11:
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/zorax/-/zorax-0.0.11.tgz#52cfe93117f1b6bccf249672cf51c9ddc87e393c"
-  integrity sha512-ueva8cY2+zTXFGMpxYxzWu63stlswdXZUk8W0HZRs301Ri8UwtQy2LplfHtPXnQqOpFhjK38X2Fnufh7mJSNXQ==
   dependencies:
     "@zorax/plug" "^0.0.1"
     zora "^3.0.0"
