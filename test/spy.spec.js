@@ -2,7 +2,7 @@ import { test, describe } from '@@'
 import { spy, arrayReporter } from '@@/util'
 
 import { createHarness } from '@zorax/plug'
-import withSpy from '@/spy'
+import withSpy, { ordinal } from '@/spy'
 
 describe('withSpy', () => {
   test('is a function', t => {
@@ -198,6 +198,20 @@ describe('a spy', () => {
     })
   })
 
+  describe('ordinal', () => {
+    const isCorrectOrdinal = (t, i, expected) => {
+      t.eq(ordinal(i), expected)
+    }
+
+    isCorrectOrdinal.title = (_, i, expected) => expected
+
+    test(isCorrectOrdinal, 0, '1st')
+    test(isCorrectOrdinal, 1, '2nd')
+    test(isCorrectOrdinal, 2, '3rd')
+    test(isCorrectOrdinal, 3, '4th')
+    test(isCorrectOrdinal, 5, '6th')
+  })
+
   describe('spy.wasCalled', () => {
     describe('spy.wasCalled(i)', () => {
       test(pass, (spy, t) => {
@@ -226,7 +240,7 @@ describe('a spy', () => {
         spy => {
           spy.wasCalled(0, ['bar'])
         },
-        ["should be called at #0 with ('bar')"]
+        ["should be called 1st with ('bar')"]
       )
       test(
         fail,
@@ -249,14 +263,14 @@ describe('a spy', () => {
         spy => {
           spy.wasCalled(1, ['bar'], undefined)
         },
-        ['call #1 should return undefined']
+        ['2nd call should return undefined']
       )
       test(
         fail,
         spy => {
           spy.wasCalled(1, ['bar'], true)
         },
-        ['call #1 should return true']
+        ['2nd call should return true']
       )
     })
 
@@ -272,7 +286,7 @@ describe('a spy', () => {
         spy => {
           spy.wasCalled(0).with('bar')
         },
-        ["should be called at #0 with ('bar')"]
+        ["should be called 1st with ('bar')"]
       )
       test(
         fail,
@@ -295,14 +309,14 @@ describe('a spy', () => {
         spy => {
           spy.wasCalled(1).returned(undefined)
         },
-        ['call #1 should return undefined']
+        ['2nd call should return undefined']
       )
       test(
         fail,
         spy => {
           spy.wasCalled(1).returned(true)
         },
-        ['call #1 should return true']
+        ['2nd call should return true']
       )
     })
 
@@ -321,7 +335,7 @@ describe('a spy', () => {
           // prettier-ignore
           spy.wasCalled(1).with('bar').returned(a)
         },
-        ["call #1 should return { name: 'a' }"]
+        ["2nd call should return { name: 'a' }"]
       )
       test(
         fail,
@@ -344,7 +358,7 @@ describe('a spy', () => {
           // prettier-ignore
           spy.wasCalled(0).returned(a).with('bar')
         },
-        ["should be called at #0 with ('bar')"]
+        ["should be called 1st with ('bar')"]
       )
     })
 
@@ -473,7 +487,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('foo', 42, null).returned(b)
           },
         },
-        ['alice should have been called 1 time']
+        ['spy:alice should have been called 1 time']
       )
 
       test(
@@ -485,7 +499,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('bar')
           },
         },
-        ["alice should be called at #0 with ('bar')"]
+        ["spy:alice should be called 1st with ('bar')"]
       )
 
       test(
@@ -497,7 +511,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('foo', 42, null).returned(b)
           },
         },
-        ["alice call #0 should return { name: 'b' }"]
+        ["spy:alice 1st call should return { name: 'b' }"]
       )
 
       test(pass, {
