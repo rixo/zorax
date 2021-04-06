@@ -40,6 +40,7 @@
     "zorax": "^0.0.12"
   },
   "scripts": {
+    "prepublishOnly": "yarn build",
     "clean": "rm -rf dist/*",
     "build": "yarn clean && rollup -c",
     "dev": "rollup -c -w",
