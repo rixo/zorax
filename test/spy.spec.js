@@ -54,10 +54,12 @@ describe('a spy', () => {
   const b = { name: 'b' }
   const returns = [a, b]
 
-  const zora_spec_fn = async (t, run, pass, expectedMessages) => {
+  const zora_spec_fn = async (t, name, run, pass, expectedMessages) => {
     const z = createHarness([withSpy()])
     let i = 0
-    const spy = z.spy(() => returns[i++])
+    const spy = name
+      ? z.spy(name, () => returns[i++])
+      : z.spy(() => returns[i++])
     const args = [spy, t]
     if (typeof run === 'function') {
       spy('foo', 42, null)
@@ -83,12 +85,18 @@ describe('a spy', () => {
   }
 
   const pass = (t, handler, expectedMessages) =>
-    zora_spec_fn(t, handler, true, expectedMessages)
+    zora_spec_fn(t, null, handler, true, expectedMessages)
 
   const isFailure = msg => msg.type === 'ASSERTION' && !msg.data.pass
 
-  const fail = async (t, handler, expectedMessages) =>
-    zora_spec_fn(t, handler, false, expectedMessages)
+  const fail = async (t, name, handler, expectedMessages) => {
+    if (typeof name !== 'string') {
+      expectedMessages = handler
+      handler = name
+      name = null
+    }
+    return zora_spec_fn(t, name, handler, false, expectedMessages)
+  }
 
   const emptyRe = /^(?:.*=>\s*)?[{}\s]*$/
   const commentRe = /^\s*\/\//
@@ -100,14 +108,18 @@ describe('a spy', () => {
       .map(line => line.trim())
       .join(' ; ')
 
-  pass.title = fail.title = (title, fn) =>
-    title ||
-    (typeof fn === 'function'
+  pass.title = fail.title = (title, name, fn) => {
+    if (title) return title
+    if (typeof name !== 'string') {
+      fn = name
+    }
+    return typeof fn === 'function'
       ? parseFn(fn)
       : ['before', 'between', 'after']
           .map(hook => fn[hook] && `${hook}: ${parseFn(fn[hook])}`)
           .filter(Boolean)
-          .join(' ; '))
+          .join(' ; ')
+  }
 
   describe('spy.calls', () => {
     test(pass, (spy, z) => {
@@ -159,7 +171,7 @@ describe('a spy', () => {
         spy => {
           spy.hasBeenCalled(0)
         },
-        ['should be called 0 times']
+        ['should have been called 0 times']
       )
 
       describe('hasBeenCalled(n).with([...args0], ...)', () => {
@@ -427,6 +439,65 @@ describe('a spy', () => {
   })
 
   describe('assert along API', () => {
+    describe('spy(named)', () => {
+      test(
+        fail,
+        'bob',
+        {
+          between: spy => {
+            // prettier-ignore
+            spy.wasCalled().with('foo', 42, null).returned(b)
+          },
+        },
+        ["bob 1st call should return { name: 'b' }"]
+      )
+
+      test(
+        fail,
+        'charly',
+        {
+          before: spy => {
+            // prettier-ignore
+            spy.wasCalled().with('foo', 42, null).returned(b)
+          },
+        },
+        ['charly should have been called 1 time']
+      )
+
+      test(
+        fail,
+        'denis',
+        {
+          between: spy => {
+            spy.wasNotCalled()
+          },
+        },
+        ['denis should not have been called']
+      )
+
+      test(
+        fail,
+        'edouard',
+        {
+          before: spy => {
+            spy.hasBeenCalled(1)
+          },
+        },
+        ['edouard should have been called 1 time']
+      )
+
+      test(
+        fail,
+        'edouard',
+        {
+          before: spy => {
+            spy.hasBeenCalled([['foo']])
+          },
+        },
+        ["edouard should have been called with ([ [ 'foo' ] ])"]
+      )
+    })
+
     describe('spy.wasCalled().with(...args).returned(result)', () => {
       test(
         'fails when called before any invocation',
@@ -487,7 +558,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('foo', 42, null).returned(b)
           },
         },
-        ['spy:alice should have been called 1 time']
+        ['alice should have been called 1 time']
       )
 
       test(
@@ -499,7 +570,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('bar')
           },
         },
-        ["spy:alice should be called 1st with ('bar')"]
+        ["alice should be called 1st with ('bar')"]
       )
 
       test(
@@ -511,7 +582,7 @@ describe('a spy', () => {
             spy.wasCalled('alice').with('foo', 42, null).returned(b)
           },
         },
-        ["spy:alice 1st call should return { name: 'b' }"]
+        ["alice 1st call should return { name: 'b' }"]
       )
 
       test(pass, {
