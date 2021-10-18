@@ -1,0 +1,18 @@
+extends:
+  - '@rixo'
+
+globals:
+  setTimeout: true
+
+settings:
+  import/core-modules:
+    - builtin-modules
+
+overrides:
+  - files: ["index.js", "index.cjs", "cli.js", "rollup.config.js", "util.cjs"]
+    env:
+      node: true
+      browser: true
+  - files: ["lib/**/*", "test/**/*"]
+    env:
+      node: true

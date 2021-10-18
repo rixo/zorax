@@ -1,0 +1,71 @@
+{
+  "name": "zoar",
+  "version": "0.4.0-4",
+  "author": "rixo <rixo@rixo.fr>",
+  "license": "ISC",
+  "homepage": "https://github.com/rixo/zoar",
+  "bugs": {
+    "url": "https://github.com/rixo/zoar/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rixo/zoar.git"
+  },
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "index.cjs",
+    "cjs",
+    "lib",
+    "util.cjs",
+    "cli.js"
+  ],
+  "bin": {
+    "zoar": "./cli.js"
+  },
+  "dependencies": {
+    "arg": "^4.1.2",
+    "cheap-watch": "^1.0.2",
+    "clarify": "^2.1.0",
+    "commander": "^4.1.0",
+    "debug": "^4.1.1",
+    "esm": "^3.2.25",
+    "fast-glob": "^3.1.1",
+    "find-up": "^4.1.0",
+    "npm-run": "^5.0.1",
+    "picomatch": "^2.2.1",
+    "require-relative": "^0.8.7",
+    "resolve": "^1.20.0",
+    "source-map-support": "^0.5.16",
+    "stack-chain": "^2.0.0",
+    "trace": "^3.1.1",
+    "zora-node-reporter": "rixo/zora-reporters#zora-node-reporter-v0.0.1-rixo.3-gitpkg",
+    "zora-tap-reporter": "^2.0.0"
+  },
+  "devDependencies": {
+    "@rixo/eslint-config": "^0.8.1",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-json": "^4.0.1",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "cross-env": "^6.0.3",
+    "npm-run-all": "^4.1.5",
+    "rollup": "^2.42.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "tap-mocha-reporter": "^5.0.1",
+    "tap-notify": "^1.0.0",
+    "zoar": "^0.4.0-1",
+    "zora": "^3.1.8",
+    "zorax": "^0.0.8"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test:autostart:default": "node -r esm test/autostart.spec.js",
+    "test:autostart:only": "cross-env ONLY=1 node -r esm test/autostart-only.spec.x.js",
+    "test:autostart": "run-p test:autostart:*",
+    "test:only": "node -r esm test/only.spec.x.js",
+    "test": "zoar --exit"
+  }
+}
