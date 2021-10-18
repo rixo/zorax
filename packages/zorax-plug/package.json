@@ -41,6 +41,7 @@
     "zorax": "^0.0.10"
   },
   "scripts": {
+    "prepublishOnly": "pnpm build",
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "zoar"
