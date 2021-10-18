@@ -25,6 +25,12 @@ export default ({ createGroupHarness }) => {
     )
   }
 
+  test('group(...) is synchronous and returns void', t => {
+    const z = createGroupHarness()
+    const result = z.group('foo', () => {})
+    t.is(result, undefined)
+  })
+
   test(
     'in normal tests',
     macro,

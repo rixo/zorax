@@ -19,6 +19,7 @@
   },
   "main": "dist/zorax.js",
   "module": "lib/zorax.js",
+  "types": "lib/types/zorax.d.ts",
   "files": [
     "dist",
     "lib"
