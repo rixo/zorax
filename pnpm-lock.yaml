@@ -15,7 +15,7 @@ importers:
       '@rixo/eslint-config': ^0.8.1
       '@rollup/plugin-commonjs': ^11.0.1
       '@rollup/plugin-node-resolve': ^7.0.0
-      '@zorax/plug': ^0.0.2
+      '@zorax/plug': workspace:^0.0.3
       builtin-modules: ^3.1.0
       cross-env: ^7.0.0
       del: ^5.1.0
@@ -25,7 +25,7 @@ importers:
       zora: ^3.0.0
       zorax: ^0.0.12
     dependencies:
-      '@zorax/plug': 0.0.2
+      '@zorax/plug': link:../zorax-plug
       zora: 3.1.9
     devDependencies:
       '@rixo/eslint-config': 0.8.1
@@ -260,12 +260,6 @@ packages:
     dependencies:
       '@types/node': 16.11.1
     dev: true
-
-  /@zorax/plug/0.0.2:
-    resolution: {integrity: sha512-P6W7RakGXkRlow4Al+VR/K+tceSqjGJvxJyPfFMj+7xXTogqKnmE8SAtnGOeg6G6UPT+/Cz4kdy8sqhipNqYKg==}
-    dependencies:
-      zora: 3.1.9
-    dev: false
 
   /acorn-jsx/5.3.2_acorn@7.4.1:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
