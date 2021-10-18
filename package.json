@@ -1,0 +1,12 @@
+{
+  "name": "zorax-monorepo",
+  "private": true,
+  "devDependencies": {
+    "@rixo/eslint-config": "^0.8.1",
+    "prettier": "^1.19.1"
+  },
+  "scripts": {
+    "lint": "pnpm --recursive lint",
+    "test": "pnpm --recursive test"
+  }
+}

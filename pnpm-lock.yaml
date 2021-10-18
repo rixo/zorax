@@ -1,34 +1,43 @@
 lockfileVersion: 5.3
 
-specifiers:
-  '@rixo/eslint-config': ^0.8.1
-  '@rollup/plugin-commonjs': ^11.0.1
-  '@rollup/plugin-node-resolve': ^7.0.0
-  '@zorax/plug': ^0.0.2
-  builtin-modules: ^3.1.0
-  cross-env: ^7.0.0
-  del: ^5.1.0
-  esm: ^3.2.25
-  rollup: ^1.30.1
-  zoar: ^0.3.0
-  zora: ^3.0.0
-  zorax: ^0.0.12
+importers:
 
-dependencies:
-  '@zorax/plug': 0.0.2
-  zora: 3.1.9
+  .:
+    specifiers:
+      '@rixo/eslint-config': ^0.8.1
+      prettier: ^1.19.1
+    devDependencies:
+      '@rixo/eslint-config': 0.8.1
+      prettier: 1.19.1
 
-devDependencies:
-  '@rixo/eslint-config': 0.8.1
-  '@rollup/plugin-commonjs': 11.1.0_rollup@1.32.1
-  '@rollup/plugin-node-resolve': 7.1.3_rollup@1.32.1
-  builtin-modules: 3.2.0
-  cross-env: 7.0.3
-  del: 5.1.0
-  esm: 3.2.25
-  rollup: 1.32.1
-  zoar: 0.3.0
-  zorax: 0.0.12
+  packages/zorax:
+    specifiers:
+      '@rixo/eslint-config': ^0.8.1
+      '@rollup/plugin-commonjs': ^11.0.1
+      '@rollup/plugin-node-resolve': ^7.0.0
+      '@zorax/plug': ^0.0.2
+      builtin-modules: ^3.1.0
+      cross-env: ^7.0.0
+      del: ^5.1.0
+      esm: ^3.2.25
+      rollup: ^1.30.1
+      zoar: ^0.3.0
+      zora: ^3.0.0
+      zorax: ^0.0.12
+    dependencies:
+      '@zorax/plug': 0.0.2
+      zora: 3.1.9
+    devDependencies:
+      '@rixo/eslint-config': 0.8.1
+      '@rollup/plugin-commonjs': 11.1.0_rollup@1.32.1
+      '@rollup/plugin-node-resolve': 7.1.3_rollup@1.32.1
+      builtin-modules: 3.2.0
+      cross-env: 7.0.3
+      del: 5.1.0
+      esm: 3.2.25
+      rollup: 1.32.1
+      zoar: 0.3.0
+      zorax: 'link:'
 
 packages:
 
@@ -231,7 +240,7 @@ packages:
     resolution: {integrity: sha512-w+LsMxKyYQm347Otw+IfBXOv9UWVjpHpCDdbBMt8Kz/xbvCYNjP+0qPh91Km3iKfSRLBB0P7fAMf0KHrPu+MyA==}
     dependencies:
       '@types/minimatch': 3.0.5
-      '@types/node': 16.11.0
+      '@types/node': 16.11.1
     dev: true
 
   /@types/json5/0.0.29:
@@ -242,20 +251,21 @@ packages:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: true
 
-  /@types/node/16.11.0:
-    resolution: {integrity: sha512-8MLkBIYQMuhRBQzGN9875bYsOhPnf/0rgXGo66S2FemHkhbn9qtsz9ywV1iCG+vbjigE4WUNVvw37Dx+L0qsPg==}
+  /@types/node/16.11.1:
+    resolution: {integrity: sha512-PYGcJHL9mwl1Ek3PLiYgyEKtwTMmkMw4vbiyz/ps3pfdRYLVv+SN7qHVAImrjdAXxgluDEw6Ph4lyv+m9UpRmA==}
     dev: true
 
   /@types/resolve/0.0.8:
     resolution: {integrity: sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==}
     dependencies:
-      '@types/node': 16.11.0
+      '@types/node': 16.11.1
     dev: true
 
   /@zorax/plug/0.0.2:
     resolution: {integrity: sha512-P6W7RakGXkRlow4Al+VR/K+tceSqjGJvxJyPfFMj+7xXTogqKnmE8SAtnGOeg6G6UPT+/Cz4kdy8sqhipNqYKg==}
     dependencies:
       zora: 3.1.9
+    dev: false
 
   /acorn-jsx/5.3.2_acorn@7.4.1:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1674,7 +1684,7 @@ packages:
     hasBin: true
     dependencies:
       '@types/estree': 0.0.50
-      '@types/node': 16.11.0
+      '@types/node': 16.11.1
       acorn: 7.4.1
     dev: true
 
@@ -2015,13 +2025,7 @@ packages:
 
   /zora/3.1.9:
     resolution: {integrity: sha512-6jd7VEVTVAJFESLW9WMfomKLbOPy2SOcV+LrKn87VgpUfdoUiIxOJgu8pYvWzk85qbglnfzh/TDRjsbknurN6A==}
-
-  /zorax/0.0.12:
-    resolution: {integrity: sha512-JBFK4Dw6fQWMD9MU8suvOnoXQ/auGr+dC0E9VBgLoi5zfVDh4CqkO3O7HPC6cw5fQns9gksLj4Gh4jJaZ1lSaA==}
-    dependencies:
-      '@zorax/plug': 0.0.2
-      zora: 3.1.9
-    dev: true
+    dev: false
 
   github.com/rixo/zora-reporters/002538be1e3fc28bc4bdca8e1bed15b20c8bd2e6:
     resolution: {tarball: https://codeload.github.com/rixo/zora-reporters/tar.gz/002538be1e3fc28bc4bdca8e1bed15b20c8bd2e6}
