@@ -29,11 +29,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "zoar"
-  },
   "dependencies": {
     "zora": "^3.1.8"
   },
@@ -44,5 +39,10 @@
     "rollup": "^1.32.0",
     "zoar": "^0.4.0-4",
     "zorax": "^0.0.10"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "zoar"
   }
 }
