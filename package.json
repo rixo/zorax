@@ -41,10 +41,10 @@
     "zorax": "^0.0.12"
   },
   "scripts": {
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "pnpm build",
     "clean": "rm -rf dist/*",
-    "build": "yarn clean && rollup -c",
+    "build": "pnpm clean && rollup -c",
     "dev": "rollup -c -w",
-    "test": "yarn zoar"
+    "test": "pnpm zoar"
   }
 }
