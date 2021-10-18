@@ -1,6 +1,6 @@
 {
   "name": "@zorax/plug",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "plugin system for zora",
   "keywords": [
     "zora",
@@ -11,13 +11,13 @@
   ],
   "author": "rixo <rixo@rixo.fr>",
   "license": "ISC",
-  "homepage": "https://github.com/rixo/zorax-plug#readme",
+  "homepage": "https://github.com/rixo/zorax/blob/master/packages/zorax-plug/README.md",
   "bugs": {
-    "url": "https://github.com/rixo/zorax-plug/issues"
+    "url": "https://github.com/rixo/zorax/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:rixo/zorax-plug.git"
+    "url": "git@github.com:rixo/zorax.git"
   },
   "main": "plug.cjs.js",
   "module": "plug.js",
