@@ -1,12 +1,8 @@
 {
   "name": "zorax",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Zora eXtended",
-  "keywords": [
-    "zora",
-    "plugin",
-    "plugins"
-  ],
+  "keywords": ["zora", "plugin", "plugins"],
   "author": "rixo <rixo@rixo.fr>",
   "license": "ISC",
   "homepage": "https://github.com/rixo/zorax/tree/master/packages/zorax#readme",
@@ -20,10 +16,7 @@
   "main": "dist/zorax.js",
   "module": "lib/zorax.js",
   "types": "lib/types/zorax.d.ts",
-  "files": [
-    "dist",
-    "lib"
-  ],
+  "files": ["dist", "lib"],
   "dependencies": {
     "@zorax/plug": "^0.0.2",
     "zora": "^3.0.0"
